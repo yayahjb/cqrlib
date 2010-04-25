@@ -9,8 +9,8 @@
 <h3 align="center">CQRlib -- ANSI C API for Quaternion Rotations</h3>
 <P>
 <center>
-Release 1.0.1<br />
-23 February 2009<br />
+Release 1.0.2<br />
+14 June 2009<br />
 &#169; 2008, 2009 Herbert J. Bernstein<br/>
 <script language="javascript" type="text/javascript">
 <!-- 
@@ -26,7 +26,8 @@ yaya <b>at</b> bernstein-plus-sons <b>dot</b> com
 You may distribute the CQRlib API under the <a href=lgpl.txt style="text-decoration:none">LGPL</a><br />
 </center>
 <P>
-This release is a minor documentation update to the original 1.0 release of 22 February 2009.
+The 1.0.2 release correct the Makefile for case-sensitive file systems and to include -lm in loading.
+Release 1.0.1 of 23 February 2009 was a minor documentation update to the original 1.0 release of 22 February 2009.
 <p>
 CQRlib is an ANSI C implementation of a utility library for quaternion arithmetic and
  quaternion rotation math.  See
@@ -48,7 +49,7 @@ Any opinions, findings, and conclusions or recommendations expressed in this mat
 <p>
 <h4>Installation</h4>
 <P>
-When the source tarball is downloaded and unpacked, you should have a directory CQRlib-1.0.1.  To see the current settings for a build
+When the source tarball is downloaded and unpacked, you should have a directory CQRlib-1.0.2.  To see the current settings for a build
 execute
 <p>
 make
@@ -67,7 +68,7 @@ PLEASE READ README_CQRlib.txt and lgpl.txt
  
  The current library link command is:
  
-   /usr/local/bin/libtool --mode=link  gcc -version-info 1:0:0 -release 1.0.1 -rpath /usr/local/lib
+   /usr/local/bin/libtool --mode=link  gcc -version-info 1:0:0 -release 1.0.2 -rpath /usr/local/lib
  
  The current library local, dynamic and static build commands are:
  

@@ -1,14 +1,14 @@
-
                  CQRlib -- ANSI C API for Quaternion Rotations
 
-                                  Release 1.0.1
-                                23 February 2009
+                                 Release 1.0.2
+                                  14 June 2009
                       (c) 2008, 2009 Herbert J. Bernstein
-                      yaya at bernstein-plus-sons dot com
+                    undefined at bernstein-plus-sons dot com
                You may distribute the CQRlib API under the LGPL
 
-   This release is a minor documentation update to the original 1.0 release of
-   22 February 2009.
+   The 1.0.2 release correct the Makefile for case-sensitive file systems and
+   to include -lm in loading. Release 1.0.1 of 23 February 2009 was a minor
+   documentation update to the original 1.0 release of 22 February 2009.
 
    CQRlib is an ANSI C implementation of a utility library for quaternion
    arithmetic and quaternion rotation math. See
@@ -29,7 +29,7 @@
     Installation
 
    When the source tarball is downloaded and unpacked, you should have a
-   directory CQRlib-1.0.0. To see the current settings for a build execute
+   directory CQRlib-1.0.2. To see the current settings for a build execute
 
    make
 
@@ -42,21 +42,17 @@
  
   The current compile command is:
  
-    /usr/local/bin/libtool --mode=compile gcc -g -O2  -Wall -ansi \
-      -pedantic -I.  -c
+    /usr/local/bin/libtool --mode=compile gcc -g -O2  -Wall -ansi -pedantic -I.  -c
  
   The current library link command is:
  
-    /usr/local/bin/libtool --mode=link  gcc -version-info 1:0:0 \
-      -release 1.0.1 -rpath /usr/local/lib
+    /usr/local/bin/libtool --mode=link  gcc -version-info 1:0:0 -release 1.0.2 -rpath /usr/local/lib
  
   The current library local, dynamic and static build commands are:
  
     /usr/local/bin/libtool --mode=link gcc -g -O2  -Wall -ansi -pedantic -I.
-    /usr/local/bin/libtool --mode=link gcc -g -O2  -Wall -ansi -pedantic \
-      -dynamic -I /usr/local/include -L/usr/local/lib
-    /usr/local/bin/libtool --mode=link gcc -g -O2  -Wall -ansi -pedantic \
-      -static -I /usr/local/include -L/usr/local/lib
+    /usr/local/bin/libtool --mode=link gcc -g -O2  -Wall -ansi -pedantic -dynamic -I /usr/local/include -L/usr/local/lib
+    /usr/local/bin/libtool --mode=link gcc -g -O2  -Wall -ansi -pedantic -static -I /usr/local/include -L/usr/local/lib
  
   Before installing the CQRlib library and example programs, check
   that the install directory and install commands are correct:
@@ -106,8 +102,7 @@
 
      /* CQRCreateQuaternion -- create a quaternion = w +ix+jy+kz */
     
-     int CQRCreateQuaternion(CQRQuaternionHandle FAR * quaternion, 
-       double w, double x, double y, double z);
+     int CQRCreateQuaternion(CQRQuaternionHandle FAR * quaternion, double w, double x, double y, double z);
     
      /* CQRCreateEmptyQuaternion -- create a quaternion = 0 +i0+j0+k0 */
     
@@ -119,33 +114,27 @@
     
      /* CQRSetQuaternion -- create an existing quaternion = w +ix+jy+kz */
     
-     int CQRSetQuaternion( CQRQuaternionHandle quaternion, double w, 
-       double x, double y, double z);
+     int CQRSetQuaternion( CQRQuaternionHandle quaternion, double w, double x, double y, double z);
 
      /*  CQRAdd -- add a quaternion (q1) to a quaternion (q2) */
     
-     int CQRAdd (CQRQuaternionHandle quaternion,  CQRQuaternionHandle q1, 
-       CQRQuaternionHandle q2 );
+     int CQRAdd (CQRQuaternionHandle quaternion,  CQRQuaternionHandle q1, CQRQuaternionHandle q2 );
     
      /*  CQRSubtract -- subtract a quaternion (q2) from a quaternion (q1)  */
     
-     int CQRSubtract (CQRQuaternionHandle quaternion,  CQRQuaternionHandle q1, 
-       CQRQuaternionHandle q2 );
+     int CQRSubtract (CQRQuaternionHandle quaternion,  CQRQuaternionHandle q1, CQRQuaternionHandle q2 );
     
      /*  CQRMultiply -- multiply a quaternion (q1) by quaternion (q2)  */
     
-     int CQRMultiply (CQRQuaternionHandle quaternion,  CQRQuaternionHandle q1, 
-       CQRQuaternionHandle q2 );
+     int CQRMultiply (CQRQuaternionHandle quaternion,  CQRQuaternionHandle q1, CQRQuaternionHandle q2 );
     
      /*  CQRDivide -- Divide a quaternion (q1) by quaternion (q2)  */
     
-     int CQRDivide (CQRQuaternionHandle quaternion,  CQRQuaternionHandle q1, 
-       CQRQuaternionHandle q2 );
+     int CQRDivide (CQRQuaternionHandle quaternion,  CQRQuaternionHandle q1, CQRQuaternionHandle q2 );
 
      /*  CQRScalarMultiply -- multiply a quaternion (q) by scalar (s)  */
     
-     int CQRScalarMultiply (CQRQuaternionHandle quaternion,  
-       CQRQuaternionHandle q, double s );
+     int CQRScalarMultiply (CQRQuaternionHandle quaternion,  CQRQuaternionHandle q, double s );
 
      /*  CQREqual -- return 0 if quaternion q1 == q2  */
     
@@ -153,8 +142,7 @@
     
      /*  CQRConjugate -- Form the conjugate of a quaternion qconj */
 
-     int CQRConjugate (CQRQuaternionHandle qconjugate, CQRQuaternionHandle 
-       quaternion);
+     int CQRConjugate (CQRQuaternionHandle qconjugate, CQRQuaternionHandle quaternion);
     
      /*  CQRNormsq -- Form the normsquared of a quaternion */
     
@@ -162,43 +150,31 @@
     
      /*  CQRInverse -- Form the inverse of a quaternion */
     
-     int CQRInverse (CQRQuaternionHandle inversequaternion, 
-       CQRQuaternionHandle quaternion );
+     int CQRInverse (CQRQuaternionHandle inversequaternion, CQRQuaternionHandle quaternion );
     
      /* CQRRotateByQuaternion -- Rotate a vector by a Quaternion, w = qvq* */
     
-     int CQRRotateByQuaternion(double FAR * w, CQRQuaternionHandle 
-       rotquaternion, double FAR * v);       
+     int CQRRotateByQuaternion(double FAR * w, CQRQuaternionHandle rotquaternion, double FAR * v);       
     
-     /* CQRAxis2Quaternion -- Form the quaternion for a rotation around 
-        axis v  by angle theta */
+     /* CQRAxis2Quaternion -- Form the quaternion for a rotation around axis v  by angle theta */
     
-     int CQRAxis2Quaternion (CQRQuaternionHandle rotquaternion, 
-        double FAR * v, double theta);
+     int CQRAxis2Quaternion (CQRQuaternionHandle rotquaternion, double FAR * v, double theta);
     
-     /* CQRMatrix2Quaterion -- Form the quaternion from a 3x3 rotation 
-        matrix R */
+     /* CQRMatrix2Quaterion -- Form the quaternion from a 3x3 rotation matrix R */
     
-     int CQRMatrix2Quaternion (CQRQuaternionHandle rotquaternion, 
-        double R[3][3]);
+     int CQRMatrix2Quaternion (CQRQuaternionHandle rotquaternion, double R[3][3]);
     
-     /* CQRQuaternion2Matrix -- Form the 3x3 rotation matrix from a 
-        quaternion */
+     /* CQRQuaternion2Matrix -- Form the 3x3 rotation matrix from a quaternion */
     
-     int CQRQuaternion2Matrix (double R[3][3], 
-       CQRQuaternionHandle rotquaternion);
+     int CQRQuaternion2Matrix (double R[3][3], CQRQuaternionHandle rotquaternion);
     
-     /* CQRQuaternion2Angles -- Convert a Quaternion into Euler Angles 
-        for Rz(Ry(Rx))) convention */
+     /* CQRQuaternion2Angles -- Convert a Quaternion into Euler Angles for Rz(Ry(Rx))) convention */
     
-     int CQRQuaternion2Angles (double FAR * RotX, double FAR * RotY, 
-       double FAR * RotZ, CQRQuaternionHandle rotquaternion);
+     int CQRQuaternion2Angles (double FAR * RotX, double FAR * RotY, double FAR * RotZ, CQRQuaternionHandle rotquaternion);
     
-     /* CQRAngles2Quaternion -- Convert Euler Angles for Rz(Ry(Rx))) 
-        convention into a quaternion */
+     /* CQRAngles2Quaternion -- Convert Euler Angles for Rz(Ry(Rx))) convention into a quaternion */
     
-     int CQRAngles2Quaternion (CQRQuaternionHandle rotquaternion, 
-       double RotX, double RotY, double RotZ );
+     int CQRAngles2Quaternion (CQRQuaternionHandle rotquaternion, double RotX, double RotY, double RotZ );
 
     Description
 
@@ -259,8 +235,7 @@
          ...
          CQRQuaternionHandle quathandle;
          ...
-         if (CQRCreateQuaternion(&quathandle,0.,1.,0.,0.)) 
-           fprintf(stderr," CQRCreateQuaternion failed!!\n");
+         if (CQRCreateQuaternion(&quathandle,0.,1.,0.,0.)) fprintf(stderr," CQRCreateQuaternion failed!!\n");
 
    To create an x vector quaternion, a y vector quaternion, add then together
    and multiply by a z-vector, and print the result :
@@ -272,8 +247,7 @@
          ...
          if (CQRSetQuaternion(&qx,0.,1.,0.,0.)
            ||CQRSetQuaternion(&qy,0.,0.,1.,0.)
-           ||CQRSetQuaternion(&qz,0.,0.,0.,1.)) 
-           fprintf(stderr," CQRSetQuaternion failed!!\n");
+           ||CQRSetQuaternion(&qz,0.,0.,0.,1.)) fprintf(stderr," CQRSetQuaternion failed!!\n");
          if (CQRAdd(&qresult1,&qx,&qy)||CQRMultiply(&qresult2,&qresult1,&qz))
            fprintf(stderr," CQR Add or Multiply failed!!\n");
          fprintf(stdout,"Result = ((i+j)*k) = %g %+gi %+gj + %+gk\n",
@@ -311,4 +285,4 @@
      ----------------------------------------------------------------------
 
    Updated 23 February 2009
-   yaya at bernstein-plus-sons dot com
+   undefined at bernstein-plus-sons dot com 
