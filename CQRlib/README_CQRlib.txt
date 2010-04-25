@@ -34,7 +34,7 @@
 
    The CQRlib package is available at www.sourceforge.net/projects/cqrlib. A
    source tarball is available at
-   downloads.sourceforge.net/cqrlib/CQRlib-1.0.3.tar.gz. Later tarballs may
+   downloads.sourceforge.net/cqrlib/CQRlib-1.0.4.tar.gz. Later tarballs may
    be available.
 
    When the source tarball is downloaded and unpacked, you should have a
