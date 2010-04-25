@@ -39,8 +39,8 @@
 #**********************************************************************/
 
 # Version string
-VERSION = 1:0:1
-RELEASE = 1.0
+VERSION = 1:0:1$
+RELEASE = 1.0.2
 
 
 #
@@ -113,12 +113,12 @@ COMMONDEP = Makefile
 #
 # Source files
 #
-SOURCE   =  $(SRC)/CQRlib.c
+SOURCE   =  $(SRC)/cqrlib.c
 
 #
 # Header files
 #
-HEADERS   =  $(INC)/CQRlib.h
+HEADERS   =  $(INC)/cqrlib.h
 
 # Default: instructions
 #
@@ -182,21 +182,21 @@ all:	$(LIB) $(BIN) $(SOURCE) $(HEADERS) \
 		$(BIN)/CQRlibTest
 		
 install:  all $(INSTALLDIR) $(INSTALLDIR)/lib $(INSTALLDIR)/include \
-          $(INC) $(LIB)/libCQRlib.$(LIB_EXT)  $(INC)/CQRlib.h
+          $(INC) $(LIB)/libCQRlib.$(LIB_EXT)  $(INC)/cqrlib.h
 		  $(INSTALL_COMMAND) $(LIB)/libCQRlib.$(LIB_EXT) $(INSTALLDIR)/lib/libCQRlib.$(LIB_EXT)
 		  $(INSTALL_FINISH_COMMAND) $(INSTALLDIR)/lib/libCQRlib.$(LIB_EXT)
-		  -cp $(INSTALLDIR)/include/CQRlib.h $(INSTALLDIR)/include/CQRlib_old.h
-		  cp $(INC)/CQRlib.h $(INSTALLDIR)/include/CQRlib.h
-		  chmod 644 $(INSTALLDIR)/include/CQRlib.h
+		  -cp $(INSTALLDIR)/include/cqrlib.h $(INSTALLDIR)/include/CQRlib_old.h
+		  cp $(INC)/cqrlib.h $(INSTALLDIR)/include/cqrlib.h
+		  chmod 644 $(INSTALLDIR)/include/cqrlib.h
 		  echo "Testing final install dynamic"
 		  $(BUILD_COMMAND_DYNAMIC)  $(EXAMPLES)/CQRlibTest.c \
-		  -lCQRlib -o $(BIN)/CQRlibTest_dynamic
+		  -lCQRlib -lm -o $(BIN)/CQRlibTest_dynamic
 		  $(BIN)/CQRlibTest_dynamic > $(TESTDATA)/CQRlibTest_dynamic.lst
 		  diff -b -c $(TESTDATA)/CQRlibTest_orig.lst \
 		    $(TESTDATA)/CQRlibTest_dynamic.lst
 		  echo "Testing final install static"
 		  $(BUILD_COMMAND_STATIC) $(EXAMPLES)/CQRlibTest.c \
-		   -lCQRlib -o $(BIN)/CQRlibTest_static
+		   -lCQRlib -lm -o $(BIN)/CQRlibTest_static
 		  $(BIN)/CQRlibTest_static > $(TESTDATA)/CQRlibTest_static.lst
 		  diff -b -c $(TESTDATA)/CQRlibTest_orig.lst \
 		    $(TESTDATA)/CQRlibTest_static.lst
@@ -236,7 +236,7 @@ $(LIB)/libCQRlib.$(LIB_EXT): $(SOURCE) $(HEADERS) $(COMMONDEP)
 # CQRlibTest example program
 #
 $(BIN)/CQRlibTest: $(LIB)/libCQRlib.$(LIB_EXT) $(EXAMPLES)/CQRlibTest.c 
-	$(BUILD_COMMAND_LOCAL) $(EXAMPLES)/CQRlibTest.c $(LIB)/libCQRlib.$(LIB_EXT) \
+	$(BUILD_COMMAND_LOCAL) $(EXAMPLES)/CQRlibTest.c $(LIB)/libCQRlib.$(LIB_EXT) -lm \
 		      -o $@
 
 #
@@ -265,6 +265,7 @@ clean:
 	@-rm -f core 
 	@-rm -f *.o
 	@-rm -f *.$(OBJ_EXT)
+	@-rm -f *.c.*
 
 #
 # Restore to distribution state
