@@ -177,15 +177,15 @@ CQRMScalarMultiply(inverserq,1./normsq); \
     
     int CQREqual (CQRQuaternionHandle q1, CQRQuaternionHandle q2 );
     
-    /*  CQRConjugate -- Form the congugate of a quaterion qconj */
+    /*  CQRConjugate -- Form the conjugate of a quaternion qconj */
 
     int CQRConjugate (CQRQuaternionHandle qconjgate, CQRQuaternionHandle quaternion);
     
-    /*  CQRNormsq -- Form the normsquared of a quaterion */
+    /*  CQRNormsq -- Form the normsquared of a quaternion */
     
     int CQRNormsq (double * normsq, CQRQuaternionHandle quaternion ) ;
     
-    /*  CQRInverse -- Form the inverse of a quaterion */
+    /*  CQRInverse -- Form the inverse of a quaternion */
     
     int CQRInverse (CQRQuaternionHandle inversequaternion, CQRQuaternionHandle quaternion );
     
@@ -197,7 +197,7 @@ CQRMScalarMultiply(inverserq,1./normsq); \
     
     int CQRAxis2Quaternion (CQRQuaternionHandle rotquaternion, double FAR * v, double theta);
     
-    /* CQRMatrix2Quaterion -- Form the quaterion from a 3x3 rotation matrix R */
+    /* CQRMatrix2Quaterion -- Form the quaternion from a 3x3 rotation matrix R */
     
     int CQRMatrix2Quaternion (CQRQuaternionHandle rotquaternion, double R[3][3]);
     

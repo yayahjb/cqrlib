@@ -9,8 +9,8 @@
 <h3 align="center">CQRlib -- ANSI C API for Quaternion Rotations</h3>
 <P>
 <center>
-Release 1.0<br />
-22 February 2009<br />
+Release 1.0.1<br />
+23 February 2009<br />
 &#169; 2008, 2009 Herbert J. Bernstein<br/>
 <script language="javascript" type="text/javascript">
 <!-- 
@@ -26,6 +26,8 @@ yaya <b>at</b> bernstein-plus-sons <b>dot</b> com
 You may distribute the CQRlib API under the <a href=lgpl.txt style="text-decoration:none">LGPL</a><br />
 </center>
 <P>
+This release is a minor documentation update to the original 1.0 release of 22 February 2009.
+<p>
 CQRlib is an ANSI C implementation of a utility library for quaternion arithmetic and
  quaternion rotation math.  See
  <ul>
@@ -46,7 +48,7 @@ Any opinions, findings, and conclusions or recommendations expressed in this mat
 <p>
 <h4>Installation</h4>
 <P>
-When the source tarball is dowloaded and unpacked, you should have a directory CQRlib-1.0.0.  To see the current settings for a build
+When the source tarball is downloaded and unpacked, you should have a directory CQRlib-1.0.1.  To see the current settings for a build
 execute
 <p>
 make
@@ -65,7 +67,7 @@ PLEASE READ README_CQRlib.txt and lgpl.txt
  
  The current library link command is:
  
-   /usr/local/bin/libtool --mode=link  gcc -version-info 1:0:0 -release 1.0 -rpath /usr/local/lib
+   /usr/local/bin/libtool --mode=link  gcc -version-info 1:0:0 -release 1.0.1 -rpath /usr/local/lib
  
  The current library local, dynamic and static build commands are:
  
@@ -163,15 +165,15 @@ define the variable USE_LOCAL_HEADERS
     
     int CQREqual (CQRQuaternionHandle q1, CQRQuaternionHandle q2 );
     
-    /*  CQRConjugate -- Form the congugate of a quaterion qconj */
+    /*  CQRConjugate -- Form the conjugate of a quaternion qconj */
 
-    int CQRConjugate (CQRQuaternionHandle qconjgate, CQRQuaternionHandle quaternion);
+    int CQRConjugate (CQRQuaternionHandle qconjugate, CQRQuaternionHandle quaternion);
     
-    /*  CQRNormsq -- Form the normsquared of a quaterion */
+    /*  CQRNormsq -- Form the normsquared of a quaternion */
     
     int CQRNormsq (double * normsq, CQRQuaternionHandle quaternion ) ;
     
-    /*  CQRInverse -- Form the inverse of a quaterion */
+    /*  CQRInverse -- Form the inverse of a quaternion */
     
     int CQRInverse (CQRQuaternionHandle inversequaternion, CQRQuaternionHandle quaternion );
     
@@ -183,11 +185,11 @@ define the variable USE_LOCAL_HEADERS
     
     int CQRAxis2Quaternion (CQRQuaternionHandle rotquaternion, double FAR * v, double theta);
     
-    /* CQRMatrix2Quaterion -- Form the quaterion from a 3x3 rotation matrix R */
+    /* CQRMatrix2Quaterion -- Form the quaternion from a 3x3 rotation matrix R */
     
     int CQRMatrix2Quaternion (CQRQuaternionHandle rotquaternion, double R[3][3]);
     
-    /* CQRQuaternionqMatrix -- Form the 3x3 rotation matrix from a quaternion */
+    /* CQRQuaternion2Matrix -- Form the 3x3 rotation matrix from a quaternion */
     
     int CQRQuaternion2Matrix (double R[3][3], CQRQuaternionHandle rotquaternion);
     
@@ -216,8 +218,8 @@ The cqrlib.h header file defines the <b>CQRQuaternionHandle</b> type as a pointe
 </tt>
 </pre>
 
-reresenting w + xi +yj + zk.  A quaternion may be declared directly using the <b>CQRQuaternion</b> type or dynamically
-allocaed by CQRCreateQuaternion or CQRCreateEmptyQuaternion, in which case it is a user responsibility to eventually
+representing w + xi +yj + zk.  A quaternion may be declared directly using the <b>CQRQuaternion</b> type or dynamically
+allocated by CQRCreateQuaternion or CQRCreateEmptyQuaternion, in which case it is a user responsibility to eventually
 free the allocated memory with CQRFreeQuaternion.  The components of an existing quaternion may be set by
 CQRSetQuaternion.
 <p>
@@ -230,12 +232,12 @@ by CQRAdd, CQRSubtract, CQRMultiply and CQRDivide.  CQRScalarMultiply multiplies
 <p>
 CQREqual returns 0 if quaternion q1 == q2, component by component.   CQRConjugate computes a quaternion with
 the same scalar component and the negative of the vector component.  CQRNormsq computes the sum of
-the squares of the components.  CQRInverse computes the inverse of a none-sero quaternion.  
+the squares of the components.  CQRInverse computes the inverse of a non-zero quaternion.  
 <p>   
 In handling rotations, a right-handed system is assumed. 
 CQRRotateByQuaternion rotates a vector by a quaternion, w = qvq*. 
 CQRAxis2Quaternion forms the quaternion for a rotation around axis v by angle theta.
-CQRMatrix2Quaterion forms the quaterion equivalent a 3x3 rotation matrix R. 
+CQRMatrix2Quaterion forms the quaternion equivalent a 3x3 rotation matrix R. 
 CQRQuaternion2Matrix forms a 3x3 rotation matrix from a quaternion.
 CQRQuaternion2Angles converts a quaternion into Euler Angles for the Rz(Ry(Rx))) convention.
 CQRAngles2Quaternion convert Euler angles for the Rz(Ry(Rx))) convention into a quaternion.
@@ -258,13 +260,13 @@ The CQRlib functions return 0 for normal completion, or the sum of one or more o
 <p>
 <h4>Examples</h4>
 <p>
-To create a quaternion dynamically from memory, intialized as the x vector with a zero scalar value, reporting failure to stderr:
+To create a quaternion dynamically from memory, initialized as the x vector with a zero scalar value, reporting failure to stderr:
 <P>
 <pre><tt>
         #include &lt;cqrlib.h&gt;
         #include &lt;stdio.h&gt;
         ...
-        CQRQaternionHandle quathandle;
+        CQRQuaternionHandle quathandle;
         ...
         if (CQRCreateQuaternion(&quathandle,0.,1.,0.,0.)) fprintf(stderr," CQRCreateQuaternion failed!!\n");
 </tt></pre>
@@ -282,7 +284,7 @@ and print the result :
           ||CQRSetQuaternion(&amp;qy,0.,0.,1.,0.)
           ||CQRSetQuaternion(&amp;qz,0.,0.,0.,1.)) fprintf(stderr," CQRSetQuaternion failed!!\n");
         if (CQRAdd(&amp;qresult1,&amp;qx,&amp;qy)||CQRMultiply(&amp;qresult2,&amp;qresult1,&amp;qz)) 
-          fprintf(stderr," CQR Add or Mulitply failed!!\n");
+          fprintf(stderr," CQR Add or Multiply failed!!\n");
         fprintf(stdout,"Result = ((i+j)*k) = %g %+gi %+gj + %+gk\n",
           qresult2.w, qresult2.x, qresult2.y, qresult2.z);
 </tt></pre>
@@ -316,7 +318,7 @@ See the test program <a href="CQRlibTest.c">CQRlibTest.c</a>
 
 <hr>
 <font size="2">
-Updated 22 February 2009<br />
+Updated 23 February 2009<br />
 <script language="javascript" type="text/javascript">
 <!-- 
       var name = "yaya";
