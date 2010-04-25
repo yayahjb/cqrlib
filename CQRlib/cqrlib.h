@@ -199,7 +199,7 @@ inline CPPQR operator* ( const CPPQR& q ) const // multiply two quaternions
 
 /* Divide -- Divide a quaternion (q1) by quaternion (q2)  */
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-CPPQR operator/ ( const CPPQR& q2 ) const
+inline CPPQR operator/ ( const CPPQR& q2 ) const
 {
     const DistanceType norm2sq = q2.w*q2.w + q2.x*q2.x + q2.y*q2.y + q2.z*q2.z;
     
@@ -313,12 +313,12 @@ inline bool operator!= ( const CPPQR& q ) const
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 inline VectorType& operator* ( const VectorType& v )
 {
-    return( CPPQRRotateByQuaternion( v ) );
+    return( RotateByQuaternion( v ) );
 }
 
 /* RotateByQuaternion -- Rotate a vector by a Quaternion, w = qvq* */
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-inline void CPPQRRotateByQuaternion(VectorType &w, const VectorType v )
+inline void RotateByQuaternion(VectorType &w, const VectorType v )
 {
     CPPQR vquat( 0.0, v[0], v[1], v[2] );
     const CPPQR wquat = (*this)*vquat;
@@ -328,7 +328,7 @@ inline void CPPQRRotateByQuaternion(VectorType &w, const VectorType v )
     return;
 }
 
-inline VectorType& CPPQRRotateByQuaternion(const VectorType v )
+inline VectorType& RotateByQuaternion(const VectorType v )
 {
     CPPQR vquat( 0.0, v[0], v[1], v[2] );
     const CPPQR wquat = (*this)*vquat;
@@ -339,14 +339,14 @@ inline VectorType& CPPQRRotateByQuaternion(const VectorType v )
 
 /* Axis2Quaternion -- Form the quaternion for a rotation around axis v  by angle theta */
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-static inline CPPQR CPPQRAxis2Quaternion ( const DistanceType& angle, const VectorType v )
+static inline CPPQR Axis2Quaternion ( const DistanceType& angle, const VectorType v )
 {
-    return( CPPQRAxis2Quaternion( v, angle ) );
+    return( Axis2Quaternion( v, angle ) );
 }
 
 /* Axis2Quaternion -- Form the quaternion for a rotation around axis v  by angle theta */
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-static inline CPPQR CPPQRAxis2Quaternion ( const VectorType v, const DistanceType& angle  )
+static inline CPPQR Axis2Quaternion ( const VectorType v, const DistanceType& angle  )
 {
     const DistanceType norm2sq = v[0]*v[0]+v[1]*v[1]+v[2]*v[2];
     
@@ -363,7 +363,7 @@ static inline CPPQR CPPQRAxis2Quaternion ( const VectorType v, const DistanceTyp
 
 /* Matrix2Quaterion -- Form the quaternion from a 3x3 rotation matrix R */
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-static inline void CPPQRMatrix2Quaternion ( CPPQR& rotquaternion, const MatrixType m )
+static inline void Matrix2Quaternion ( CPPQR& rotquaternion, const MatrixType m )
 {
     const DistanceType trace = m[0] + m[4] + m[8];
     
@@ -417,7 +417,7 @@ static inline void CPPQRMatrix2Quaternion ( CPPQR& rotquaternion, const MatrixTy
     return;
 }
 
-static inline void CPPQRMatrix2Quaternion (CPPQR& rotquaternion, const DistanceType R[3][3] )
+static inline void Matrix2Quaternion (CPPQR& rotquaternion, const DistanceType R[3][3] )
 {
     const DistanceType trace = R[0][0] + R[1][1] + R[2][2];
     
@@ -485,7 +485,7 @@ DistanceType operator[] ( const int k ) const
 /* Quaternion2Matrix -- Form the 3x3 rotation matrix from a quaternion */    
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
-static inline void CPPQRQuaternion2Matrix(MatrixType& m, const CPPQR q )
+static inline void Quaternion2Matrix(MatrixType& m, const CPPQR q )
 {
     const DistanceType ww = q.w*q.w;
     const DistanceType xx = q.x*q.x;
@@ -507,7 +507,7 @@ static inline void CPPQRQuaternion2Matrix(MatrixType& m, const CPPQR q )
 
  }
 
-static inline void CPPQRQuaternion2Matrix( DistanceType m[3][3], const CPPQR q )
+static inline void Quaternion2Matrix( DistanceType m[3][3], const CPPQR q )
 {
     const DistanceType ww = q.w*q.w;
     const DistanceType xx = q.x*q.x;
@@ -529,7 +529,7 @@ static inline void CPPQRQuaternion2Matrix( DistanceType m[3][3], const CPPQR q )
         
 }
 
-// end CPPQRQuaternion2Matrix
+// end Quaternion2Matrix
 
 /* Get a unit quaternion from a general one */
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
@@ -548,7 +548,7 @@ inline CPPQR UnitQ( void ) const
 
 /* Quaternion2Angles -- Convert a Quaternion into Euler Angles for Rz(Ry(Rx))) convention */  
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-inline bool CPPQRQuaternion2Angles ( DistanceType& rotX, DistanceType& rotY, DistanceType& rotZ ) const
+inline bool Quaternion2Angles ( DistanceType& rotX, DistanceType& rotY, DistanceType& rotZ ) const
 {
     const DistanceType PI = 4.0 * atan( 1.0 );
     
@@ -615,11 +615,11 @@ inline bool CPPQRQuaternion2Angles ( DistanceType& rotX, DistanceType& rotY, Dis
     }
     
     return( true );
-}  // end CPPQRQuaternion2Angles
+}  // end Quaternion2Angles
 
 /* Angles2Quaternion -- Convert Euler Angles for Rz(Ry(Rx))) convention into a quaternion */
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-static inline CPPQR CPPQRAngles2Quaternion ( const DistanceType& rotX, const DistanceType& rotY, const DistanceType& rotZ )
+static inline CPPQR Angles2Quaternion ( const DistanceType& rotX, const DistanceType& rotY, const DistanceType& rotZ )
 {
     const DistanceType cx = cos( rotX / 2.0 );
     const DistanceType sx = sin( rotX / 2.0 );
@@ -636,7 +636,7 @@ static inline CPPQR CPPQRAngles2Quaternion ( const DistanceType& rotX, const Dis
                cx*cy*sz - sx*sy*cz 
                ); 
     return( q );
-} // end CPPQRAngles2Quaternion
+} // end Angles2Quaternion
 
 static inline CPPQR Point2Quaternion( const DistanceType v[3] )
 {

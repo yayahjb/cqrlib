@@ -8,9 +8,9 @@
 <h3 align="center">CQRlib -- ANSI C API for Quaternion Rotations</h3>
 <P>
 <center>
-Release 1.0.3<br />
-8 July 2009<br />
-&#169; 2008, 2009 Herbert J. Bernstein<br/>
+Release 1.0.4<br />
+25 April 2010<br />
+&#169; 2008, 2009, 2010 Herbert J. Bernstein<br/>
 <script language="javascript" type="text/javascript">
 <!-- 
       var name = "yaya";
@@ -25,6 +25,7 @@ yaya <b>at</b> bernstein-plus-sons <b>dot</b> com
 You may distribute the CQRlib API under the <a href=lgpl.txt style="text-decoration:none">LGPL</a><br />
 </center>
 <P>
+The 1.0.4 release added a version of L. Andrews adaptation to a C++ template.
 The 1.0.3 release changed from use of a FAR macro to use of a CQR_FAR macro to avoid name conflicts.
 the macros for malloc, free, memmove and memset were also changed.
 The 1.0.2 release of 14 June 2009 corrected the Makefile for case-sensitive file systems and to include -lm in loading.
@@ -51,11 +52,11 @@ Any opinions, findings, and conclusions or recommendations expressed in this mat
 <h4>Installation</h4>
 <P>
 The CQRlib package is available at <a href="http://www.sourceforge.net/projects/cqrlib">www.sourceforge.net/projects/cqrlib</a>.
-A source tarball is available at <a href="http://downloads.sourceforge.net/cqrlib/CQRlib-1.0.3.tar.gz">downloads.sourceforge.net/cqrlib/CQRlib-1.0.3.tar.gz</a>.
+A source tarball is available at <a href="http://downloads.sourceforge.net/cqrlib/CQRlib-1.0.4.tar.gz">downloads.sourceforge.net/cqrlib/CQRlib-1.0.3.tar.gz</a>.
 Later tarballs may be available.
 
 <P>
-When the source tarball is downloaded and unpacked, you should have a directory CQRlib-1.0.3.  To see the current settings for a build
+When the source tarball is downloaded and unpacked, you should have a directory CQRlib-1.0.4.  To see the current settings for a build
 execute
 <p>
 make
@@ -68,19 +69,27 @@ PLEASE READ README_CQRlib.txt and lgpl.txt
  Before making the CQRlib library and example programs, check
  that the chosen settings are correct
  
- The current compile command is:
+ The current C and C++ compile commands are:
  
-   /usr/local/bin/libtool --mode=compile gcc -g -O2  -Wall -ansi -pedantic -I.  -c
+   /Users/yaya/bin/libtool --mode=compile gcc -g -O2  -Wall -ansi -pedantic -I.  -c
+   /Users/yaya/bin/libtool --mode=compile g++ -g -O2  -Wall -ansi -pedantic -DCQR_NOCCODE=1 -I.  -c
  
- The current library link command is:
+ The current library C and C++ link commands are:
  
-   /usr/local/bin/libtool --mode=link  gcc -version-info 2:0:0 -release 1.0.3 -rpath /usr/local/lib
+   /Users/yaya/bin/libtool --mode=link gcc -version-info 2:0:0 -rpath /Users/yaya/lib
+   /Users/yaya/bin/libtool --mode=link g++ -version-info 2:0:0 -rpath /Users/yaya/lib
  
- The current library local, dynamic and static build commands are:
+ The current C library local, dynamic and static build commands are:
  
-   /usr/local/bin/libtool --mode=link gcc -g -O2  -Wall -ansi -pedantic -I.
-   /usr/local/bin/libtool --mode=link gcc -g -O2  -Wall -ansi -pedantic -dynamic -I /usr/local/include -L/usr/local/lib
-   /usr/local/bin/libtool --mode=link gcc -g -O2  -Wall -ansi -pedantic -static -I /usr/local/include -L/usr/local/lib
+   /Users/yaya/bin/libtool --mode=link gcc -g -O2  -Wall -ansi -pedantic -I.
+   /Users/yaya/bin/libtool --mode=link gcc -g -O2  -Wall -ansi -pedantic -dynamic -I /Users/yaya/include -L/Users/yaya/lib
+   /Users/yaya/bin/libtool --mode=link gcc -g -O2  -Wall -ansi -pedantic -static -I /Users/yaya/include -L/Users/yaya/lib
+ 
+ The current C++ template local, dynamic and static build commands are:
+ 
+   /Users/yaya/bin/libtool --mode=link g++ -g -O2  -Wall -ansi -pedantic -DCQR_NOCCODE=1 -I.
+   /Users/yaya/bin/libtool --mode=link g++ -g -O2  -Wall -ansi -pedantic -DCQR_NOCCODE=1 -dynamic -I /Users/yaya/include -L/Users/yaya/lib
+   /Users/yaya/bin/libtool --mode=link g++ -g -O2  -Wall -ansi -pedantic -DCQR_NOCCODE=1 -static -I /Users/yaya/include -L/Users/yaya/lib
  
  Before installing the CQRlib library and example programs, check
  that the install directory and install commands are correct:
@@ -134,15 +143,15 @@ define the variable USE_LOCAL_HEADERS
 <tt>
     /* CQRCreateQuaternion -- create a quaternion = w +ix+jy+kz */
     
-    int CQRCreateQuaternion(CQRQuaternionHandle FAR * quaternion, double w, double x, double y, double z); 
+    int CQRCreateQuaternion(CQRQuaternionHandle * quaternion, double w, double x, double y, double z); 
     
     /* CQRCreateEmptyQuaternion -- create a quaternion = 0 +i0+j0+k0 */
     
-    int CQRCreateEmptyQuaternion(CQRQuaternionHandle FAR * quaternion) ;
+    int CQRCreateEmptyQuaternion(CQRQuaternionHandle * quaternion) ;
     
     /* CQRFreeQuaternion -- free a quaternion  */
     
-    int CQRFreeQuaternion(CQRQuaternionHandle FAR * quaternion);        
+    int CQRFreeQuaternion(CQRQuaternionHandle * quaternion);        
     
     /* CQRSetQuaternion -- create an existing quaternion = w +ix+jy+kz */
     
@@ -180,17 +189,21 @@ define the variable USE_LOCAL_HEADERS
     
     int CQRNormsq (double * normsq, CQRQuaternionHandle quaternion ) ;
     
+    /*  CQRNorm -- Form the norm of a quaternion */
+    
+    int CQRNorm (double * norm, CQRQuaternionHandle quaternion ) ;
+
     /*  CQRInverse -- Form the inverse of a quaternion */
     
     int CQRInverse (CQRQuaternionHandle inversequaternion, CQRQuaternionHandle quaternion );
     
     /* CQRRotateByQuaternion -- Rotate a vector by a Quaternion, w = qvq* */
     
-    int CQRRotateByQuaternion(double FAR * w, CQRQuaternionHandle rotquaternion, double FAR * v);        
+    int CQRRotateByQuaternion(double * w, CQRQuaternionHandle rotquaternion, double * v);        
     
     /* CQRAxis2Quaternion -- Form the quaternion for a rotation around axis v  by angle theta */
     
-    int CQRAxis2Quaternion (CQRQuaternionHandle rotquaternion, double FAR * v, double theta);
+    int CQRAxis2Quaternion (CQRQuaternionHandle rotquaternion, double * v, double theta);
     
     /* CQRMatrix2Quaterion -- Form the quaternion from a 3x3 rotation matrix R */
     
@@ -202,11 +215,93 @@ define the variable USE_LOCAL_HEADERS
     
     /* CQRQuaternion2Angles -- Convert a Quaternion into Euler Angles for Rz(Ry(Rx))) convention */
     
-    int CQRQuaternion2Angles (double FAR * RotX, double FAR * RotY, double FAR * RotZ, CQRQuaternionHandle rotquaternion);
+    int CQRQuaternion2Angles (double * RotX, double * RotY, double * RotZ, CQRQuaternionHandle rotquaternion);
     
     /* CQRAngles2Quaternion -- Convert Euler Angles for Rz(Ry(Rx))) convention into a quaternion */
     
     int CQRAngles2Quaternion (CQRQuaternionHandle rotquaternion, double RotX, double RotY, double RotZ );
+</tt>
+</pre>
+    
+and for C++
+
+<pre>
+<tt>
+template< typename DistanceType=double, typename VectorType=double[3], typename MatrixType=double[9] >
+class CPPQR
+{
+
+public:
+
+     /* Constructors  */
+         inline CPPQR( );  // default constructor
+         inline CPPQR( const CPPQR&amp; q ); // copy constructor
+         inline CPPQR( const DistanceType&amp; wi, const DistanceType&amp; xi, const DistanceType&amp; yi, const DistanceType&amp; zi );
+
+     /* Set -- set the values of an existing quaternion = w +ix+jy+kz */
+         inline void Set ( const DistanceType&amp; wi, const DistanceType&amp; xi, const DistanceType&amp; yi, const DistanceType&amp; zi ); 
+
+     /* Accessors */
+         inline DistanceType GetW( void ) const;
+         inline DistanceType GetX( void ) const;
+         inline DistanceType GetY( void ) const;
+         inline DistanceType GetZ( void ) const;
+         
+     /* Operators */
+         inline CPPQR operator+ ( const CPPQR&amp; q ) const;
+         inline CPPQR&amp; operator+= ( const CPPQR&amp; q );
+         inline CPPQR&amp; operator-= ( const CPPQR&amp; q );
+         inline CPPQR operator- ( const CPPQR&amp; q ) const;
+         inline CPPQR operator* ( const CPPQR&amp; q ) const;
+         inline CPPQR operator/ ( const CPPQR&amp; q2 ) const;
+         inline CPPQR operator* ( const DistanceType&amp; d ) const;
+         inline CPPQR operator/ ( const DistanceType&amp; d ) const;
+         inline CPPQR Conjugate ( void ) const;
+         inline CPPQR&amp; operator= ( const CPPQR&amp; q );
+         inline bool operator== ( const CPPQR&amp; q ) const;
+         inline bool operator!= ( const CPPQR&amp; q ) const;
+         inline VectorType&amp; operator* ( const VectorType&amp; v );
+         DistanceType operator[] ( const int k ) const;
+
+
+     /* Normsq -- Form the normsquared of a quaternion */
+         inline DistanceType Normsq ( void ) const;
+
+     /* Norm -- Form the norm of a quaternion */
+         inline DistanceType Norm ( void ) const;
+
+     /* Inverse -- Form the inverse of a quaternion */
+         inline CPPQR Inverse ( void ) const;
+
+     /* RotateByQuaternion -- Rotate a vector by a Quaternion, w = qvq* */
+         inline void RotateByQuaternion(VectorType &amp;w, const VectorType v );
+         inline VectorType&amp; RotateByQuaternion( const VectorType v );
+
+     /* Axis2Quaternion -- Form the quaternion for a rotation around axis v  by angle theta */
+         static inline CPPQR Axis2Quaternion ( const DistanceType&amp; angle, const VectorType v );
+         static inline CPPQR Axis2Quaternion ( const VectorType v, const DistanceType&amp; angle  );
+
+     /* Matrix2Quaterion -- Form the quaternion from a 3x3 rotation matrix R */
+         static inline void Matrix2Quaternion ( CPPQR&amp; rotquaternion, const MatrixType m );
+         static inline void Matrix2Quaternion ( CPPQR&amp; rotquaternion, const DistanceType R[3][3] );
+
+     /* Quaternion2Matrix -- Form the 3x3 rotation matrix from a quaternion */    
+         static inline void Quaternion2Matrix( MatrixType&amp; m, const CPPQR q );
+         static inline void Quaternion2Matrix( DistanceType m[3][3], const CPPQR q );
+
+     /* Get a unit quaternion from a general one */
+         inline CPPQR UnitQ( void ) const;
+
+     /* Quaternion2Angles -- Convert a Quaternion into Euler Angles for Rz(Ry(Rx))) convention */  
+         inline bool Quaternion2Angles ( DistanceType&amp; rotX, DistanceType&amp; rotY, DistanceType&amp; rotZ ) const;
+
+     /* Angles2Quaternion -- Convert Euler Angles for Rz(Ry(Rx))) convention into a quaternion */
+         static inline CPPQR Angles2Quaternion ( const DistanceType&amp; rotX, const DistanceType&amp; rotY, const DistanceType&amp; rotZ );
+         static inline CPPQR Point2Quaternion( const DistanceType v[3] );
+
+}; // end class CPPQR
+
+
 </tt>
 </pre>
     
@@ -249,6 +344,10 @@ CQRQuaternion2Matrix forms a 3x3 rotation matrix from a quaternion.
 CQRQuaternion2Angles converts a quaternion into Euler Angles for the Rz(Ry(Rx))) convention.
 CQRAngles2Quaternion convert Euler angles for the Rz(Ry(Rx))) convention into a quaternion.
 
+<p>
+If operating with __cplusplus defined, then the CPPQR template is defined allowing the creation of CPPQR quaternion
+objects.  The template has three typename arguments:  DistanceType, VectorType and MatrixType that default to double,
+double[3] and double[9].  Specializations are provided to support a double[3][3] MatrixType.
 <p>
 <h4>Returns</h4>
 <p>
@@ -321,11 +420,13 @@ To rotate the 3D vector [-1.,0.,1.] 90 degrees clockwise around the vector [1.,1
 </tt></pre>
 <p>The output should be "[-1.,0.,1.] rotated 90 degrees clockwise around the vector [1.,1.,1.] = [0.57735, -1.1547, 0.57735]".
 <p>
-See the test program <a href="CQRlibTest.c">CQRlibTest.c</a>
+See the test program <a href="CQRlibTest.c">CQRlibTest.c</a>.
+<p>
+For examples of the use of the CPPQR template, see the C++ test program <a href="CPPQRTest.cpp">CPPQRTest.cpp</a>.
 
 <hr>
 <font size="2">
-Updated 8 July 2009<br />
+Updated 25 April 2010<br />
 <script language="javascript" type="text/javascript">
 <!-- 
       var name = "yaya";

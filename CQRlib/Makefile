@@ -40,7 +40,7 @@
 
 # Version string
 VERSION = 2:0:0
-RELEASE = 1.0.3
+RELEASE = 1.0.4
 
 
 #
@@ -138,19 +138,27 @@ default:
 	@echo ' Before making the CQRlib library and example programs, check'
 	@echo ' that the chosen settings are correct'
 	@echo ' '
-	@echo ' The current compile command is:'
+	@echo ' The current C and C++ compile commands are:'
 	@echo ' '
 	@echo '   $(COMPILE_COMMAND)'
+	@echo '   $(CPPCOMPILE_COMMAND)'
 	@echo ' '
-	@echo ' The current library link command is:'
+	@echo ' The current library C and C++ link commands are:'
 	@echo ' '
 	@echo '   $(LIBRARY_LINK_COMMAND)'
+	@echo '   $(CPPLIBRARY_LINK_COMMAND)'
 	@echo ' '
-	@echo ' The current library local, dynamic and static build commands are:'
+	@echo ' The current C library local, dynamic and static build commands are:'
 	@echo ' '
 	@echo '   $(BUILD_COMMAND_LOCAL)'
 	@echo '   $(BUILD_COMMAND_DYNAMIC)'
 	@echo '   $(BUILD_COMMAND_STATIC)'
+	@echo ' '
+	@echo ' The current C++ template local, dynamic and static build commands are:'
+	@echo ' '
+	@echo '   $(CPPBUILD_COMMAND_LOCAL)'
+	@echo '   $(CPPBUILD_COMMAND_DYNAMIC)'
+	@echo '   $(CPPBUILD_COMMAND_STATIC)'
 	@echo ' '
 	@echo ' Before installing the CQRlib library and example programs, check'
 	@echo ' that the install directory and install commands are correct:'
