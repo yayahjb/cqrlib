@@ -39,7 +39,7 @@
 #**********************************************************************/
 
 # Version string
-VERSION = 1:0:1
+VERSION = 1:0:0
 RELEASE = 1.0
 
 
@@ -255,8 +255,6 @@ empty:
 		  @-rm -rf $(LIB)
 		  @-rm -rf $(BIN)
 		  @-rm -f $(TESTDATA)/CQRlibTest.lst
-		  @-rm -f $(TESTDATA)/CQRlibTest_static.lst
-		  @-rm -f $(TESTDATA)/CQRlibTest_dynamic.lst
 		  
 #
 # Remove temporary files
