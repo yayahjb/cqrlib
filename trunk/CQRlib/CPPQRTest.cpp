@@ -112,19 +112,19 @@ int main ( )
     
     /* Create quaternions to rotate about the x,y and z-axes by 90 degrees */
     
-    qx = CPPQR<double>::CPPQRAxis2Quaternion( vx, PI/2.0 );
-    qy = CPPQR<double>::CPPQRAxis2Quaternion( vy, PI/2.0 );
-    qz = CPPQR<double>::CPPQRAxis2Quaternion( vz, PI/2.0 );
+    qx = CPPQR<double>::Axis2Quaternion( vx, PI/2.0 );
+    qy = CPPQR<double>::Axis2Quaternion( vy, PI/2.0 );
+    qz = CPPQR<double>::Axis2Quaternion( vz, PI/2.0 );
     
     if (qx.GetW()<0.||fabs(qx.GetW()*qx.GetW()-.5)>1.e-13||fabs(qx.GetX()*qx.GetX()-.5)>1.e-13||fabs(qx.GetY())>DBL_MIN||fabs(qx.GetZ())>DBL_MIN) {
         errorcount++;
-        fprintf(stdout,"CPPQRAxis2Quaternion qx wrong value [ %g, %g, %g, %g ] != [sqrt(1./2.),sqrt(1./2.),0,0]\n",qx.GetW(),qx.GetX(),qx.GetY(),qx.GetZ());
+        fprintf(stdout,"Axis2Quaternion qx wrong value [ %g, %g, %g, %g ] != [sqrt(1./2.),sqrt(1./2.),0,0]\n",qx.GetW(),qx.GetX(),qx.GetY(),qx.GetZ());
     }
     
     
     if (qy.GetW()<0.||fabs(qy.GetW()*qy.GetW()-.5)>1.e-13||fabs(qy.GetY()*qy.GetY()-.5)>1.e-13||fabs(qy.GetX())>DBL_MIN||fabs(qy.GetZ())>DBL_MIN) {
         errorcount++;
-        fprintf(stdout,"CPPQRAxis2Quaternion qy wrong value [ %g, %g, %g, %g ] != [sqrt(1./2.),sqrt(1./2.),0,0]\n",qy.GetW(),qy.GetX(),qy.GetY(),qy.GetZ());
+        fprintf(stdout,"Axis2Quaternion qy wrong value [ %g, %g, %g, %g ] != [sqrt(1./2.),sqrt(1./2.),0,0]\n",qy.GetW(),qy.GetX(),qy.GetY(),qy.GetZ());
     }
     
     
@@ -137,16 +137,16 @@ int main ( )
     double Maty[9];
     double Matz[9];
     
-    CPPQR<double>::CPPQRQuaternion2Matrix(Matx,qx);
-    CPPQR<double>::CPPQRQuaternion2Matrix(Maty,qy);
-    CPPQR<double>::CPPQRQuaternion2Matrix(Matz,qz);
+    CPPQR<double>::Quaternion2Matrix(Matx,qx);
+    CPPQR<double>::Quaternion2Matrix(Maty,qy);
+    CPPQR<double>::Quaternion2Matrix(Matz,qz);
     
     if (  fabs(Matx[0]-1.)>1.e-13 ||fabs(Matx[5]+1.)>1.e-13  ||fabs(Matx[7]-1.)>1.e-13
         ||fabs(Matx[1])>1.e-13    ||fabs(Matx[2])>1.e-13
         ||fabs(Matx[3])>1.e-13    ||fabs(Matx[4])>1.e-13
         ||fabs(Matx[6])>1.e-13    ||fabs(Matx[8])>1.e-13) {
         errorcount++;
-        fprintf(stdout," CPPQRQuaternion2Matrix Matx wrong value \n  [ %g, %g, %g ]\n  [ %g, %g, %g ]\n  [ %g, %g, %g ]\n"
+        fprintf(stdout," Quaternion2Matrix Matx wrong value \n  [ %g, %g, %g ]\n  [ %g, %g, %g ]\n  [ %g, %g, %g ]\n"
                 "!=  [1, 0, 0]\n    [0, 0, -1]\n    [0, 1, 0]\n",
                 Matx[0]-1.0,Matx[1],Matx[2],
                 Matx[3],Matx[4],Matx[5]+1.0,
@@ -158,7 +158,7 @@ int main ( )
         ||fabs(Maty[3])>1.e-13 ||fabs(Maty[5])>1.e-13
         ||fabs(Maty[7])>1.e-13 ||fabs(Maty[8])>1.e-13) {
         errorcount++;
-        fprintf(stdout," CPPQRQuaternion2Matrix Maty wrong value \n  [ %g, %g, %g]\n  [ %g, %g, %g]\n  [ %g, %g, %g ]\n"
+        fprintf(stdout," Quaternion2Matrix Maty wrong value \n  [ %g, %g, %g]\n  [ %g, %g, %g]\n  [ %g, %g, %g ]\n"
                 "!=  [0, 0, 1]\n    [0, 1, 0]\n    [-1, 0, 0]\n",
                 Maty[0],Maty[1],Maty[2]-1.0,
                 Maty[3],Maty[4],Maty[5]-1.0,
@@ -170,7 +170,7 @@ int main ( )
         ||fabs(Matz[4])>1.e-13 ||fabs(Matz[5])>1.e-13
         ||fabs(Matz[6])>1.e-13 ||fabs(Matz[7])>1.e-13) {
         errorcount++;
-        fprintf(stdout," CPPQRQuaternion2Matrix Matz wrong value \n  [ %g, %g, %g]\n  [ %g, %g, %g]\n  [ %g, %g, %g ]\n"
+        fprintf(stdout," Quaternion2Matrix Matz wrong value \n  [ %g, %g, %g]\n  [ %g, %g, %g]\n  [ %g, %g, %g ]\n"
                 "!=  [0, -1, 0]\n    [1, 0, 0]\n    [0, 0, 1]\n",
                 Matz[0],Matz[1],Matz[2],
                 Matz[3],Matz[4],Matz[5],
@@ -181,34 +181,34 @@ int main ( )
     EXX = EXY = EXZ = 0.;
     EYX = EYY = EYZ = 0.;
     EZX = EZY = EZZ = 0.;
-    qx.CPPQRQuaternion2Angles(EXX,EXY,EXZ);
-    qy.CPPQRQuaternion2Angles(EYX,EYY,EYZ);
-    qz.CPPQRQuaternion2Angles(EZX,EZY,EZZ);
+    qx.Quaternion2Angles(EXX,EXY,EXZ);
+    qy.Quaternion2Angles(EYX,EYY,EYZ);
+    qz.Quaternion2Angles(EZX,EZY,EZZ);
     
-    q1 = CPPQR<double>::CPPQRAngles2Quaternion(EXX,EXY,EXZ);
-    q2 = CPPQR<double>::CPPQRAngles2Quaternion(EYX,EYY,EYZ);
-    q3 = CPPQR<double>::CPPQRAngles2Quaternion(EZX,EZY,EZZ);
+    q1 = CPPQR<double>::Angles2Quaternion(EXX,EXY,EXZ);
+    q2 = CPPQR<double>::Angles2Quaternion(EYX,EYY,EYZ);
+    q3 = CPPQR<double>::Angles2Quaternion(EZX,EZY,EZZ);
     
     q4 = qx / q1;
     normsq = q4.Normsq( );
     
     if ( fabs(normsq-1.) > 1.e-13 || fabs(q4.GetW()*q4.GetW()-1.) > 1.e-13) {
         errorcount++;
-        fprintf(stdout," CPPQRAngles2Quaternion q1 wrong value [%g, %g, %g, %g] != +/-[%g, %g, %g, %g]\n",
+        fprintf(stdout," Angles2Quaternion q1 wrong value [%g, %g, %g, %g] != +/-[%g, %g, %g, %g]\n",
                 qx.GetW(), qx.GetX(), qx.GetY(), qx.GetZ(), q1.GetW(), q1.GetX(), q1.GetY(), q1.GetZ() );  
     }
     
     q4 = qy / q2;
     normsq = q4.Normsq( );
     if (fabs(normsq-1.) > 1.e-13 || fabs(q4.GetW()*q4.GetW()-1.) > 1.e-13) {
-        fprintf(stdout," CPPQRAngles2Quaternion q2 wrong value [%g, %g, %g, %g] != +/-[%g, %g, %g, %g]\n",
+        fprintf(stdout," Angles2Quaternion q2 wrong value [%g, %g, %g, %g] != +/-[%g, %g, %g, %g]\n",
                 qy.GetW(), qy.GetX(), qy.GetY(), qy.GetZ(), q2.GetW(), q2.GetX(), q2.GetY(), q2.GetZ() );  
     }
     
     q4 = qz / q3;
     normsq = q4.Normsq( );
     if (abs(normsq-1.) > 1.e-13 || fabs(q4.GetW()*q4.GetW()-1.) > 1.e-13) {
-        fprintf(stdout," CPPQRAngles2Quaternion q3 wrong value [%g, %g, %g, %g] != +/-[%g, %g, %g, %g]\n",
+        fprintf(stdout," Angles2Quaternion q3 wrong value [%g, %g, %g, %g] != +/-[%g, %g, %g, %g]\n",
                 qz.GetW(), qz.GetX(), qz.GetY(), qz.GetZ(), q3.GetW(), q3.GetX(), q3.GetY(), q3.GetZ() );  
     }
     
@@ -220,8 +220,8 @@ int main ( )
         CPPQR<double> qq1, qq2, qq3;
         CPPQR<double> qq4, qqx, qqy, qqz;
         
-        CPPQR<double>::CPPQRMatrix2Quaternion(qq4, m );
-        CPPQR<double>::CPPQRQuaternion2Matrix(mx,qq4 );
+        CPPQR<double>::Matrix2Quaternion(qq4, m );
+        CPPQR<double>::Quaternion2Matrix(mx,qq4 );
         
         sum = 0.0;
         for ( int i=0; i<9; ++i )
@@ -229,7 +229,7 @@ int main ( )
         if ( sum > 1.0E-8 )
         {
             errorcount++;
-            fprintf( stdout, " CPPQRMatrix2Quaternion difference\n" );
+            fprintf( stdout, " Matrix2Quaternion difference\n" );
             fprintf( stdout, " qq4 = {%g,%g,%g,%g}\n",qq4.GetW(),qq4.GetX(),qq4.GetY(),qq4.GetZ());
             fprintf( stdout, " m = {{%g,%g,%g},{%g,%g,%g},{%g,%g,%g))\n",
                     m[0],m[1],m[2],m[3],m[4],m[5],m[6],m[7],m[8]);
