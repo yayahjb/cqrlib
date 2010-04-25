@@ -5,6 +5,7 @@
  *  Created by Herbert J. Bernstein on 2/15/09.
  *  Copyright 2009 Herbert J. Bernstein. All rights reserved.
  *
+ *  Revised, 8 July 2009 for CQR_FAR macro -- HJB
  */
 
 /*  Work supported in part by NIH NIGMS under grant 1R15GM078077-01 and DOE 
@@ -63,20 +64,20 @@ extern "C" {
     
 #endif
     
-#ifdef CNEARTREE_USE_FAR
+#ifdef CQR_USE_FAR
 #include <malloc.h>
-#define FAR __far
-#define MALLOC _fmalloc
-#define FREE _ffree
-#define MEMSET _fmemset
-#define MEMMOVE _fmemmove
+#define CQR_FAR __far
+#define CQR_MALLOC _fmalloc
+#define CQR_FREE _ffree
+#define CQR_MEMSET _fmemset
+#define CQR_MEMMOVE _fmemmove
 #else
 #include <stdlib.h>
-#define FAR
-#define MALLOC malloc
-#define FREE free
-#define MEMSET memset
-#define MEMMOVE memmove
+#define CQR_FAR
+#define CQR_MALLOC malloc
+#define CQR_FREE free
+#define CQR_MEMSET memset
+#define CQR_MEMMOVE memmove
 #endif
 #include <math.h>
     
@@ -139,15 +140,15 @@ CQRMScalarMultiply(inverserq,1./normsq); \
     
     /* CQRCreateQuaternion -- create a quaternion = w +ix+jy+kz */
     
-    int CQRCreateQuaternion(CQRQuaternionHandle FAR * quaternion, double w, double x, double y, double z); 
+    int CQRCreateQuaternion(CQRQuaternionHandle CQR_FAR * quaternion, double w, double x, double y, double z); 
     
     /* CQRCreateEmptyQuaternion -- create a quaternion = 0 +i0+j0+k0 */
     
-    int CQRCreateEmptyQuaternion(CQRQuaternionHandle FAR * quaternion) ;
+    int CQRCreateEmptyQuaternion(CQRQuaternionHandle CQR_FAR * quaternion) ;
     
     /* CQRFreeQuaternion -- free a quaternion  */
     
-    int CQRFreeQuaternion(CQRQuaternionHandle FAR * quaternion);        
+    int CQRFreeQuaternion(CQRQuaternionHandle CQR_FAR * quaternion);        
     
     /* CQRSetQuaternion -- create an existing quaternion = w +ix+jy+kz */
     
@@ -191,11 +192,11 @@ CQRMScalarMultiply(inverserq,1./normsq); \
     
     /* CQRRotateByQuaternion -- Rotate a vector by a Quaternion, w = qvq* */
     
-    int CQRRotateByQuaternion(double FAR * w, CQRQuaternionHandle rotquaternion, double FAR * v);        
+    int CQRRotateByQuaternion(double CQR_FAR * w, CQRQuaternionHandle rotquaternion, double CQR_FAR * v);        
     
     /* CQRAxis2Quaternion -- Form the quaternion for a rotation around axis v  by angle theta */
     
-    int CQRAxis2Quaternion (CQRQuaternionHandle rotquaternion, double FAR * v, double theta);
+    int CQRAxis2Quaternion (CQRQuaternionHandle rotquaternion, double CQR_FAR * v, double theta);
     
     /* CQRMatrix2Quaterion -- Form the quaternion from a 3x3 rotation matrix R */
     
@@ -207,7 +208,7 @@ CQRMScalarMultiply(inverserq,1./normsq); \
     
     /* CQRQuaternion2Angles -- Convert a Quaternion into Euler Angles for Rz(Ry(Rx))) convention */
     
-    int CQRQuaternion2Angles (double FAR * RotX, double FAR * RotY, double FAR * RotZ, CQRQuaternionHandle rotquaternion);
+    int CQRQuaternion2Angles (double CQR_FAR * RotX, double CQR_FAR * RotY, double CQR_FAR * RotZ, CQRQuaternionHandle rotquaternion);
     
     /* CQRAngles2Quaternion -- Convert Euler Angles for Rz(Ry(Rx))) convention into a quaternion */
     
