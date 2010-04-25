@@ -226,7 +226,7 @@ extern "C" {
     }
     
     
-    /*  CQRConjugate -- Form the conjugate of a quaternion qconj */
+    /*  CQRConjugate -- Form the congugate of a quaterion qconj */
     
     int CQRConjugate (CQRQuaternionHandle qconjugate, CQRQuaternionHandle quaternion) {
         
@@ -241,7 +241,7 @@ extern "C" {
         
     }
     
-    /*  CQRNormsq -- Form the normsquared of a quaternion */
+    /*  CQRNormsq -- Form the normsquared of a quaterion */
     
     int CQRNormsq (double * normsq, CQRQuaternionHandle quaternion ) {
         
@@ -253,7 +253,7 @@ extern "C" {
         
     }
     
-    /*  CQRInverse -- Form the inverse of a quaternion */
+    /*  CQRInverse -- Form the inverse of a quaterion */
     
     int CQRInverse (CQRQuaternionHandle inversequaternion, CQRQuaternionHandle quaternion ) {
         
