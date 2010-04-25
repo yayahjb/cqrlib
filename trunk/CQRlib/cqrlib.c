@@ -254,6 +254,18 @@ extern "C" {
         
     }
     
+    /*  CQRNorm -- Form the norm of a quaternion */
+    
+    int CQRNorm (double * norm, CQRQuaternionHandle quaternion ) {
+        
+        if (!quaternion || !norm ) return CQR_BAD_ARGUMENT;
+        
+        *norm = sqrt(quaternion->w*quaternion->w + quaternion->x*quaternion->x + quaternion->y*quaternion->y + quaternion->z*quaternion->z);
+        
+        return CQR_SUCCESS;
+        
+    }
+    
     /*  CQRInverse -- Form the inverse of a quaternion */
     
     int CQRInverse (CQRQuaternionHandle inversequaternion, CQRQuaternionHandle quaternion ) {

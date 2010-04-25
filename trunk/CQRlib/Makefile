@@ -47,7 +47,9 @@ RELEASE = 1.0.3
 # Compiler and compilation flags
 #
 CC	= gcc
+CXX = g++
 CFLAGS  = -g -O2  -Wall -ansi -pedantic
+CPPFLAGS = $(CFLAGS) -DCQR_NOCCODE=1
 
 #
 # libtool path if system default is not suitable
@@ -85,13 +87,18 @@ else
 INCLUDES = -I$(INC)
 endif
 
-COMPILE_COMMAND        =  $(LIBTOOL) --mode=compile $(CC) $(CFLAGS) $(INCLUDES) $(WARNINGS) -c
-LIBRARY_LINK_COMMAND   =  $(LIBTOOL) --mode=link  $(CC) -version-info $(VERSION) -release $(RELEASE) -rpath $(INSTALLDIR)/lib
-BUILD_COMMAND_LOCAL    =  $(LIBTOOL) --mode=link $(CC) $(CFLAGS) $(INCLUDES)
-BUILD_COMMAND_DYNAMIC  =  $(LIBTOOL) --mode=link $(CC) $(CFLAGS) -dynamic -I $(INSTALLDIR)/include -L$(INSTALLDIR)/lib
-BUILD_COMMAND_STATIC   =  $(LIBTOOL) --mode=link $(CC) $(CFLAGS) -static -I $(INSTALLDIR)/include -L$(INSTALLDIR)/lib
-INSTALL_COMMAND        =  $(LIBTOOL) --mode=install cp
-INSTALL_FINISH_COMMAND =  $(LIBTOOL) --mode=finish
+COMPILE_COMMAND         =  $(LIBTOOL) --mode=compile $(CC) $(CFLAGS) $(INCLUDES) $(WARNINGS) -c
+LIBRARY_LINK_COMMAND    =  $(LIBTOOL) --mode=link  $(CC) -version-info $(VERSION) -rpath $(INSTALLDIR)/lib
+BUILD_COMMAND_LOCAL     =  $(LIBTOOL) --mode=link $(CC) $(CFLAGS) $(INCLUDES)
+BUILD_COMMAND_DYNAMIC   =  $(LIBTOOL) --mode=link $(CC) $(CFLAGS) -dynamic -I $(INSTALLDIR)/include -L$(INSTALLDIR)/lib
+BUILD_COMMAND_STATIC    =  $(LIBTOOL) --mode=link $(CC) $(CFLAGS) -static -I $(INSTALLDIR)/include -L$(INSTALLDIR)/lib
+CPPCOMPILE_COMMAND      =  $(LIBTOOL) --mode=compile $(CXX) $(CPPFLAGS) $(INCLUDES) $(WARNINGS) -c
+CPPLIBRARY_LINK_COMMAND =  $(LIBTOOL) --mode=link $(CXX) -version-info $(VERSION) -rpath $(INSTALLDIR)/lib
+CPPBUILD_COMMAND_LOCAL  =  $(LIBTOOL) --mode=link $(CXX) $(CPPFLAGS) $(INCLUDES)
+CPPBUILD_COMMAND_DYNAMIC=  $(LIBTOOL) --mode=link $(CXX) $(CPPFLAGS) -dynamic -I $(INSTALLDIR)/include -L$(INSTALLDIR)/lib
+CPPBUILD_COMMAND_STATIC =  $(LIBTOOL) --mode=link $(CXX) $(CPPFLAGS) -static -I $(INSTALLDIR)/include -L$(INSTALLDIR)/lib
+INSTALL_COMMAND         =  $(LIBTOOL) --mode=install cp
+INSTALL_FINISH_COMMAND  =  $(LIBTOOL) --mode=finish
 
 OBJ_EXT                =  lo
 LIB_EXT                =  la
@@ -179,7 +186,7 @@ default:
 #
 all:	$(LIB) $(BIN) $(SOURCE) $(HEADERS) \
 		$(LIB)/libCQRlib.$(LIB_EXT) \
-		$(BIN)/CQRlibTest
+		$(BIN)/CQRlibTest $(BIN)/CPPQRTest
 		
 install:  all $(INSTALLDIR) $(INSTALLDIR)/lib $(INSTALLDIR)/include \
           $(INC) $(LIB)/libCQRlib.$(LIB_EXT)  $(INC)/cqrlib.h
@@ -200,6 +207,16 @@ install:  all $(INSTALLDIR) $(INSTALLDIR)/lib $(INSTALLDIR)/include \
 		  $(BIN)/CQRlibTest_static > $(TESTDATA)/CQRlibTest_static.lst
 		  diff -b -c $(TESTDATA)/CQRlibTest_orig.lst \
 		    $(TESTDATA)/CQRlibTest_static.lst
+		  $(CPPBUILD_COMMAND_DYNAMIC) $(EXAMPLES)/CPPQRTest.cpp \
+		    -lm -o $(BIN)/CPPQRTest_dynamic
+		  $(BIN)/CPPQRTest_dynamic > $(TESTDATA)/CPPQRTest_dynamic.lst
+		  diff -b -c $(TESTDATA)/CPPQRTest_orig.lst \
+		    $(TESTDATA)/CPPQRTest_dynamic.lst
+		  $(CPPBUILD_COMMAND_STATIC) $(EXAMPLES)/CPPQRTest.cpp \
+		    -lm -o $(BIN)/CPPQRTest_static
+	      $(BIN)/CPPQRTest_static > $(TESTDATA)/CPPQRTest_static.lst
+		  diff -b -c $(TESTDATA)/CPPQRTest_orig.lst \
+		    $(TESTDATA)/CPPQRTest_static.lst
 			
 		  
 		  
@@ -240,13 +257,24 @@ $(BIN)/CQRlibTest: $(LIB)/libCQRlib.$(LIB_EXT) $(EXAMPLES)/CQRlibTest.c
 		      -o $@
 
 #
+# CPPQRTest example program
+#
+$(BIN)/CPPQRTest: $(EXAMPLES)/CPPQRTest.cpp
+	$(CPPBUILD_COMMAND_LOCAL) $(EXAMPLES)/CPPQRTest.cpp -lm \
+		      -o $@
+
+#
 # Tests
 #
 tests:		$(LIB) $(BIN) $(BIN)/CQRlibTest \
-				$(TESTDATA)/CQRlibTest_orig.lst
+				all $(TESTDATA)/CQRlibTest_orig.lst $(TESTDATA)/CPPQRTest_orig.lst
 			$(BIN)/CQRlibTest > $(TESTDATA)/CQRlibTest.lst
 			diff -b -c $(TESTDATA)/CQRlibTest_orig.lst \
 				$(TESTDATA)/CQRlibTest.lst
+			$(BIN)/CPPQRTest > $(TESTDATA)/CPPQRTest.lst
+			diff -b -c $(TESTDATA)/CPPQRTest_orig.lst \
+				$(TESTDATA)/CPPQRTest.lst
+			
 
 #
 # Remove all non-source files
@@ -257,6 +285,9 @@ empty:
 		  @-rm -f $(TESTDATA)/CQRlibTest.lst
 		  @-rm -f $(TESTDATA)/CQRlibTest_static.lst
 		  @-rm -f $(TESTDATA)/CQRlibTest_dynamic.lst
+		  @-rm -f $(TESTDATA)/CPPQRTest.lst
+		  @-rm -f $(TESTDATA)/CPPQRTest_static.lst
+		  @-rm -f $(TESTDATA)/CPPQRTest_dynamic.lst
 		  
 #
 # Remove temporary files
