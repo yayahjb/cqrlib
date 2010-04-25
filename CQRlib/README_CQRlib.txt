@@ -1,14 +1,17 @@
                  CQRlib -- ANSI C API for Quaternion Rotations
 
-                                 Release 1.0.2
-                                  14 June 2009
+                                 Release 1.0.3
+                                  8 July 2009
                       (c) 2008, 2009 Herbert J. Bernstein
-                    undefined at bernstein-plus-sons dot com
+                      yaya at bernstein-plus-sons dot com
                You may distribute the CQRlib API under the LGPL
 
-   The 1.0.2 release correct the Makefile for case-sensitive file systems and
-   to include -lm in loading. Release 1.0.1 of 23 February 2009 was a minor
-   documentation update to the original 1.0 release of 22 February 2009.
+   The 1.0.3 release changed from use of a FAR macro to use of a CQR_FAR
+   macro to avoid name conflicts. the macros for malloc, free, memmove and
+   memset were also changed. The 1.0.2 release of 14 June 2009 corrected the
+   Makefile for case-sensitive file systems and to include -lm in loading.
+   Release 1.0.1 of 23 February 2009 was a minor documentation update to the
+   original 1.0 release of 22 February 2009.
 
    CQRlib is an ANSI C implementation of a utility library for quaternion
    arithmetic and quaternion rotation math. See
@@ -28,8 +31,13 @@
 
     Installation
 
+   The CQRlib package is available at www.sourceforge.net/projects/cqrlib. A
+   source tarball is available at
+   downloads.sourceforge.net/cqrlib/CQRlib-1.0.3.tar.gz. Later tarballs may
+   be available.
+
    When the source tarball is downloaded and unpacked, you should have a
-   directory CQRlib-1.0.2. To see the current settings for a build execute
+   directory CQRlib-1.0.3. To see the current settings for a build execute
 
    make
 
@@ -46,7 +54,7 @@
  
   The current library link command is:
  
-    /usr/local/bin/libtool --mode=link  gcc -version-info 1:0:0 -release 1.0.2 -rpath /usr/local/lib
+    /usr/local/bin/libtool --mode=link  gcc -version-info 2:0:0 -release 1.0.3 -rpath /usr/local/lib
  
   The current library local, dynamic and static build commands are:
  
@@ -284,5 +292,5 @@
 
      ----------------------------------------------------------------------
 
-   Updated 23 February 2009
-   undefined at bernstein-plus-sons dot com 
+   Updated 8 July 2009
+   yaya at bernstein-plus-sons dot com
