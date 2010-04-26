@@ -61,6 +61,7 @@
 #ifdef __cplusplus
 #include <climits>
 #include <cmath>
+#include <cfloat>
 template< typename DistanceType=double, typename VectorType=double[3], typename MatrixType=double[9] >
 class CPPQR
 {
@@ -137,10 +138,19 @@ inline DistanceType GetY( void ) const
     return( y );
 }
 
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
 inline DistanceType GetZ( void ) const
 {
     return( z );
+}
+
+/* Dot product of 2 quaternions as 4-vectors */
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+inline DistanceType Dot( const CPPQR& q) const
+{
+    return (w*q.w+x*q.x+y*q.y+z*q.z);
 }
 
 /* Add -- add a quaternion (q1) to a quaternion (q2) */   
@@ -184,6 +194,19 @@ inline CPPQR operator- ( const CPPQR& q ) const
     temp.z = z - q.z;
     return( temp );
 }
+
+/* Unary minus -- negate a quaterion  */  
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+inline CPPQR operator- ( void ) const
+{
+    CPPQR temp;
+    temp.w = -w;
+    temp.x = -x;
+    temp.y = -y;
+    temp.z = -z;
+    return( temp );
+}
+
 
 /* Multiply -- multiply a quaternion (q1) by quaternion (q2)  */    
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
@@ -643,6 +666,333 @@ static inline CPPQR Point2Quaternion( const DistanceType v[3] )
     return( CPPQR( 0.0, v[0], v[1], v[2] ) );
 }
 
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+/*  SLERP -- Spherical Linear Interpolation   
+ Take two quaternions and two weights and combine them
+ following a great circle on the unit quaternion 4-D sphere
+ and linear interpolation between the radii
+ 
+ This version keeps a quaternion separate from the negative
+ of the same quaternion and is not appropriate for
+ quaternions representing rotations.  Use CQRHLERP
+ to apply SLERP to quaternions representing rotations
+ */
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+inline CPPQR SLERP (const CPPQR& q, DistanceType w1, DistanceType w2) const
+{
+    CPPQR s1;
+    CPPQR s2;
+    CPPQR st1;
+    CPPQR st2;
+    CPPQR sout;
+    DistanceType normsq;
+    const DistanceType norm1sq=(*this).Normsq();
+    const DistanceType norm2sq=q.Normsq();
+    DistanceType r1,r2;
+    DistanceType cosomega,sinomega;
+    DistanceType omega;
+    DistanceType t, t1, t2;
+    
+    
+    t = w1/(w1+w2);
+    
+    if (norm1sq <= DBL_MIN) return q*(1-t);
+    
+    if (norm2sq <= DBL_MIN) return (*this)*t;
+    
+    if (fabs(norm1sq-1.)<= DBL_MIN) {
+        r1 = 1.;
+        s1 = *this;
+    } else {
+        r1 = sqrt(norm1sq);
+        s1 = (*this)*(1/r1);
+    }
+    
+    if (fabs(norm2sq-1.)<= DBL_MIN) {
+        r2 = 1.;
+        s2 = q;
+    } else {
+        r2 = sqrt(norm1sq);
+        s2 = q*(1./r2);
+    }
+    
+    cosomega = s1.Dot(s2);
+    if (cosomega>=1. || cosomega<=-1.) {
+        sinomega = 0.;
+    } else {
+        sinomega=sqrt(1.-cosomega*cosomega);
+    }
+    
+    omega=atan2(sinomega,cosomega);
+    
+    if (sinomega <= 0.05) {
+        t1=t*(1-t*t*omega*omega/6.);
+        t2=(1-t)*(1.-(1-t)*(1-t)*omega*omega/6.);
+        st1=s1*t1;
+        st2=s2*t2;        
+        if (cosomega >=0.) {
+            sout=st1+st2;
+        } else {
+            if (sinomega <= 0.00001) {
+                sout=QR(-st1.x,st1.w,st1.z,-st1.y)-QR(-st2.x,st2.w,st2.z,-st2.y);
+            } else {
+                sout = s1+s2;
+            }
+            sout=sout*(1/sout.Norm());
+            if (t >= 0.5) {
+                sout=sout.SLERP(s1,2-2.*t,2.*t-1.);
+            }else {
+                sout=sout.SLERP(s2,2.*t,1.-2.*t);
+            }
+        }
+        normsq = sout.Normsq();
+        if (normsq <= DBL_MIN) {
+            return CPPQR<DistanceType>(0.,0.,0.,0.);
+        } else {
+            return sout*(t*r1+(1-t)*r2)/sqrt(normsq);
+        }
+    }
+    
+    t1 = sin(t*omega);
+    t2 = sin((1-t)*omega);
+    st1=s1*t1;
+    st2=s2*t2;
+    sout=st1+st2;
+    normsq = sout.Normsq();
+    return CPPQR(sout*((r1*t+r2*(1-t))/sqrt(normsq)));
+    
+}
+
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+/*  HLERP -- Hemispherical Linear Interpolation   
+ Take two quaternions and two weights and combine them
+ following a great circle on the unit quaternion 4-D sphere
+ and linear interpolation between the radii
+ 
+ This is the hemispherical version, for use with quaternions
+ representing rotations.  Use SLERP for full
+ spherical interpolation.
+ 
+ */
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+inline CPPQR HLERP (const CPPQR& q, DistanceType w1, DistanceType w2) const
+{
+    CPPQR s1;
+    CPPQR s2;
+    CPPQR st1;
+    CPPQR st2;
+    CPPQR sout;
+    DistanceType normsq;
+    const DistanceType norm1sq=(*this).Normsq();
+    const DistanceType norm2sq=q.Normsq();
+    DistanceType r1,r2;
+    DistanceType cosomega,sinomega;
+    DistanceType omega;
+    DistanceType t, t1, t2;
+    
+    
+    t = w1/(w1+w2);
+    
+    if (norm1sq <= DBL_MIN) return q*(1-t);
+    
+    if (norm2sq <= DBL_MIN) return (*this)*t;
+    
+    if (fabs(norm1sq-1.)<= DBL_MIN) {
+        r1 = 1.;
+        s1 = *this;
+    } else {
+        r1 = sqrt(norm1sq);
+        s1 = (*this)*(1/r1);
+    }
+    
+    if (fabs(norm2sq-1.)<= DBL_MIN) {
+        r2 = 1.;
+        s2 = q;
+    } else {
+        r2 = sqrt(norm1sq);
+        s2 = q*(1./r2);
+}
+
+    cosomega = s1.Dot(s2);
+    if (cosomega>=1. || cosomega<=-1.) {
+        sinomega = 0.;
+    } else {
+        sinomega=sqrt(1.-cosomega*cosomega);
+    }
+    
+    if (cosomega < 0.) {
+        if (t < 0.5) {
+            s1.w=-s1.w;s1.x=-s1.x;s1.y=-s1.y;s1.z=-s1.z; 
+        } else {
+            s2.w=-s2.w;s2.x=-s2.x;s2.y=-s2.y;s2.z=-s2.z; 
+        }
+        cosomega = -cosomega;
+    }
+    
+    omega=atan2(sinomega,cosomega);
+    
+    if (sinomega <= 0.05) {
+        t1=t*(1-t*t*omega*omega/6.);
+        t2=(1-t)*(1.-(1-t)*(1-t)*omega*omega/6.);
+        st1=s1*t1;
+        st2=s2*t2;
+        sout=st1+st2;
+        if (sout.w < 0.) {
+            sout.w = -sout.w;
+            sout.x = -sout.x;
+            sout.y = -sout.y;
+            sout.z = -sout.z;
+        }
+        normsq = sout.Normsq();
+        if (normsq <= DBL_MIN) {
+            return CPPQR(0.,0.,0.,0.);
+        } else {
+            return CPPQR(sout*(t*r1+(1-t)*r2)/sqrt(normsq));
+        }
+    }
+    
+    t1 = sin(t*omega);
+    t2 = sin((1-t)*omega);
+    st1=s1*t1;
+    st2=s2*t2;
+    sout=st1+st2;
+    if (sout.w < 0.) {
+        sout = -sout;
+    }
+    normsq = sout.Normsq();
+    return CPPQR(sout*((r1*t+r2*(1-t))/sqrt(normsq)));
+    
+}
+
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+/*  SLERPDist -- Spherical Linear Interpolation distance
+ Form the distance between two quaternions by summing
+ the difference in the magnitude of the radii and
+ the great circle distance along the sphere of the
+ smaller quaternion.
+ 
+ This version keeps a quaternion separate from the negative
+ of the same quaternion and is not appropriate for
+ quaternions representing rotations.  Use CQRHLERPDist
+ to apply SLERPDist to quaternions representing rotations
+ */
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+inline DistanceType SLERPDist (const CPPQR& q) const
+{
+    CPPQR s1;
+    CPPQR s2;
+    CPPQR st1;
+    CPPQR st2;
+    CPPQR sout;
+    const DistanceType norm1sq=(*this).Normsq();
+    const DistanceType norm2sq=q.Normsq();
+    DistanceType r1,r2;
+    DistanceType cosomega,sinomega;
+    DistanceType omega;
+    
+    if (norm1sq <= DBL_MIN) return sqrt(norm2sq);
+    
+    if (norm2sq <= DBL_MIN) return sqrt(norm1sq);
+    
+    if (fabs(norm1sq-1.)<= DBL_MIN) {
+        r1 = 1.;
+        s1 = *this;
+    } else {
+        r1 = sqrt(norm1sq);
+        s1 = (*this)*(1/r1);
+    }
+    
+    if (fabs(norm2sq-1.)<= DBL_MIN) {
+        r2 = 1.;
+        s2 = q;
+    } else {
+        r2 = sqrt(norm1sq);
+        s2 = q*(1./r2);
+    }
+    
+    cosomega = s1.Dot(s2);
+    if (cosomega>=1. || cosomega<=-1.) {
+        sinomega = 0.;
+    } else {
+        sinomega=sqrt(1.-cosomega*cosomega);
+    }
+    
+    omega=atan2(sinomega,cosomega);
+    if (r1 <= r2) return (r2-r1)+r1*fabs(omega);
+    else return (r1-r2)+r2*fabs(omega);
+    
+}
+
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+/*  HLERPDist -- Hemispherical Linear Interpolation distance
+ Form the distance between two quaternions by summing
+ the difference in the magnitude of the radii and
+ the great circle distance along the sphere of the
+ smaller quaternion.
+ 
+ This version keeps a quaternion separate from the negative
+ of the same quaternion and is not appropriate for
+ quaternions representing rotations.  Use CQRHLERPDist
+ to apply SLERPDist to quaternions representing rotations
+ */
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+inline DistanceType HLERPDist (const CPPQR& q) const
+{
+    CPPQR s1;
+    CPPQR s2;
+    CPPQR st1;
+    CPPQR st2;
+    CPPQR sout;
+    const DistanceType norm1sq=(*this).Normsq();
+    const DistanceType norm2sq=q.Normsq();
+    DistanceType r1,r2;
+    DistanceType cosomega,sinomega;
+    DistanceType omega;
+    
+    if (norm1sq <= DBL_MIN) return sqrt(norm2sq);
+    
+    if (norm2sq <= DBL_MIN) return sqrt(norm1sq);
+    
+    if (fabs(norm1sq-1.)<= DBL_MIN) {
+        r1 = 1.;
+        s1 = *this;
+    } else {
+        r1 = sqrt(norm1sq);
+        s1 = (*this)*(1/r1);
+    }
+    
+    if (fabs(norm2sq-1.)<= DBL_MIN) {
+        r2 = 1.;
+        s2 = q;
+    } else {
+        r2 = sqrt(norm1sq);
+        s2 = q*(1./r2);
+    }
+    
+    cosomega = s1.Dot(s2);
+    if (cosomega>=1. || cosomega<=-1.) {
+        sinomega = 0.;
+    } else {
+        sinomega=sqrt(1.-cosomega*cosomega);
+    }
+    
+    if (cosomega < 0.) {
+        cosomega = -cosomega;
+    }
+    
+    omega=atan2(sinomega,cosomega);
+    if (r1 <= r2) return (r2-r1)+r1*fabs(omega);
+    else return (r1-r2)+r2*fabs(omega);
+    
+}
+
+
+
 }; // end class CPPQR
 
 #ifndef CQR_NOCCODE
@@ -653,6 +1003,7 @@ extern "C" {
 #ifndef __cplusplus
 #ifndef CQR_NOCCODE
 #include <math.h>
+#include <float.h>
 #endif
 #endif
 
@@ -706,6 +1057,9 @@ extern "C" {
 (product).y = -(q1).x*(q2).z + (q1).w*(q2).y + (q1).z*(q2).x + (q1).y*(q2).w; \
 (product).z =  (q1).w*(q2).z + (q1).x*(q2).y - (q1).y*(q2).x + (q1).z*(q2).w;
 
+#define CQRMDot(dotprod,q1,q2 ) \
+dotprod = (q1).w*(q2).w + (q1).x*(q2).x + (q1).y*(q2).y + (q1).z*(q2).z; 
+    
 #define CQRMScalarMultiply(product,q,s ) \
 (product).w = (q).w*s; \
 (product).x = (q).x*s; \
@@ -758,6 +1112,10 @@ CQRMScalarMultiply(inverserq,1./normsq); \
     
     int CQRMultiply (CQRQuaternionHandle quaternion,  CQRQuaternionHandle q1, CQRQuaternionHandle q2 );
     
+    /*  CQRDot -- dot product of quaternion (q1) by quaternion (q2) as 4-vectors  */
+    
+    int CQRDot (double CQR_FAR * dotprod,  CQRQuaternionHandle q1, CQRQuaternionHandle q2 );    
+    
     /*  CQRDivide -- Divide a quaternion (q1) by quaternion (q2)  */
     
     int CQRDivide (CQRQuaternionHandle quaternion,  CQRQuaternionHandle q1, CQRQuaternionHandle q2 );
@@ -776,11 +1134,11 @@ CQRMScalarMultiply(inverserq,1./normsq); \
     
     /*  CQRNormsq -- Form the normsquared of a quaternion */
     
-    int CQRNormsq (double * normsq, CQRQuaternionHandle quaternion ) ;
+    int CQRNormsq (double CQR_FAR * normsq, CQRQuaternionHandle quaternion ) ;
     
     /*  CQRNorm -- Form the norm of a quaternion */
     
-    int CQRNormsq (double * norm, CQRQuaternionHandle quaternion ) ;
+    int CQRNormsq (double CQR_FAR * norm, CQRQuaternionHandle quaternion ) ;
     
     /*  CQRInverse -- Form the inverse of a quaternion */
     
@@ -809,6 +1167,67 @@ CQRMScalarMultiply(inverserq,1./normsq); \
     /* CQRAngles2Quaternion -- Convert Euler Angles for Rz(Ry(Rx))) convention into a quaternion */
     
     int CQRAngles2Quaternion (CQRQuaternionHandle rotquaternion, double RotX, double RotY, double RotZ );
+    
+    /* Represent a 3-vector as a quaternion with w=0 */
+    
+    int CQRPoint2Quaternion( CQRQuaternionHandle quaternion, double v[3] );
+
+    
+    /*  SLERP -- Spherical Linear Interpolation   
+     Take two quaternions and two weights and combine them
+     following a great circle on the unit quaternion 4-D sphere
+     and linear interpolation between the radii
+     
+     This version keeps a quaternion separate from the negative
+     of the same quaternion and is not appropriate for
+     quaternions representing rotations.  Use CQRHLERP
+     to apply SLERP to quaternions representing rotations
+     */
+    
+    int CQRSLERP (CQRQuaternionHandle quaternion, const CQRQuaternionHandle q1, const CQRQuaternionHandle q2,
+                  const double w1, const double w2);
+    
+    /*  HLERP -- Hemispherical Linear Interpolation   
+     Take two quaternions and two weights and combine them
+     following a great circle on the unit quaternion 4-D sphere
+     and linear interpolation between the radii
+     
+     This is the hemispherical version, for use with quaternions
+     representing rotations.  Use SLERP for full
+     spherical interpolation.
+     
+     */
+    
+    int CQRHLERP (CQRQuaternionHandle quaternion, const CQRQuaternionHandle q1, const CQRQuaternionHandle q2,
+                  const double w1, const double w2);
+    
+    /*  SLERPDist -- Spherical Linear Interpolation distance
+     Form the distance between two quaternions by summing
+     the difference in the magnitude of the radii and
+     the great circle distance along the sphere of the
+     smaller quaternion.
+     
+     This version keeps a quaternion separate from the negative
+     of the same quaternion and is not appropriate for
+     quaternions representing rotations.  Use CQRHLERPDist
+     to apply SLERPDist to quaternions representing rotations
+     */
+    
+    int CQRSLERPDist (double CQR_FAR * dist, const CQRQuaternionHandle q1, const CQRQuaternionHandle q2);
+    
+    /*  HLERPDist -- Hemispherical Linear Interpolation distance
+     Form the distance between two quaternions by summing
+     the difference in the magnitude of the radii and
+     the great circle distance along the sphere of the
+     smaller quaternion.
+     
+     This version keeps a quaternion separate from the negative
+     of the same quaternion and is not appropriate for
+     quaternions representing rotations.  Use CQRHLERPDist
+     to apply SLERPDist to quaternions representing rotations
+     */
+    
+    int HLERPDist (double CQR_FAR * dist, const CQRQuaternionHandle q1, const CQRQuaternionHandle q2);
     
 #ifdef __cplusplus
     
