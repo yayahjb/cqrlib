@@ -735,7 +735,7 @@ inline CPPQR SLERP (const CPPQR& q, DistanceType w1, DistanceType w2) const
             sout=st1+st2;
         } else {
             if (sinomega <= 0.00001) {
-                sout=QR(-st1.x,st1.w,st1.z,-st1.y)-QR(-st2.x,st2.w,st2.z,-st2.y);
+                sout=CPPQR(-st1.x,st1.w,st1.z,-st1.y)-CPPQR(-st2.x,st2.w,st2.z,-st2.y);
             } else {
                 sout = s1+s2;
             }
@@ -748,9 +748,9 @@ inline CPPQR SLERP (const CPPQR& q, DistanceType w1, DistanceType w2) const
         }
         normsq = sout.Normsq();
         if (normsq <= DBL_MIN) {
-            return CPPQR<DistanceType>(0.,0.,0.,0.);
+            return CPPQR(0.,0.,0.,0.);
         } else {
-            return sout*(t*r1+(1-t)*r2)/sqrt(normsq);
+            return CPPQR(sout*(t*r1+(1-t)*r2)/sqrt(normsq));
         }
     }
     
