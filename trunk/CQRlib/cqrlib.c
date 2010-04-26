@@ -174,6 +174,18 @@ extern "C" {
         
     }
     
+    /*  CQRDot -- dot product of quaternion (q1) by quaternion (q2) as 4-vectors   */
+    
+    int CQRDot (double CQR_FAR * dotprod,  CQRQuaternionHandle q1, CQRQuaternionHandle q2 ) {
+        
+        if (!dotprod || !q1 || !q2 ) return CQR_BAD_ARGUMENT;
+        
+        *dotprod = q1->w*q2->w + q1->x*q2->x + q1->y*q2->y +q1->z*q2->z;
+        
+        return CQR_SUCCESS;
+        
+    }
+    
     /*  CQRDivide -- divide a quaternion (q1) by quaternion (q2)  */
     
     int CQRDivide (CQRQuaternionHandle quaternion,  CQRQuaternionHandle q1, CQRQuaternionHandle q2 ) {
@@ -244,7 +256,7 @@ extern "C" {
     
     /*  CQRNormsq -- Form the normsquared of a quaternion */
     
-    int CQRNormsq (double * normsq, CQRQuaternionHandle quaternion ) {
+    int CQRNormsq (double CQR_FAR * normsq, CQRQuaternionHandle quaternion ) {
         
         if (!quaternion || !normsq ) return CQR_BAD_ARGUMENT;
         
@@ -256,7 +268,7 @@ extern "C" {
     
     /*  CQRNorm -- Form the norm of a quaternion */
     
-    int CQRNorm (double * norm, CQRQuaternionHandle quaternion ) {
+    int CQRNorm (double CQR_FAR * norm, CQRQuaternionHandle quaternion ) {
         
         if (!quaternion || !norm ) return CQR_BAD_ARGUMENT;
         
@@ -548,6 +560,366 @@ extern "C" {
         return CQR_SUCCESS;
         
     }
+    
+    /* Represent a 3-vector as a quaternion with w=0 */
+    
+    int CQRPoint2Quaternion( CQRQuaternionHandle quaternion, double v[3] )
+    {
+        quaternion->w = 0.;
+        quaternion->x = v[0];
+        quaternion->y = v[1];
+        quaternion->z = v[2];
+        return CQR_SUCCESS;
+
+    }
+    
+    
+    /*  SLERP -- Spherical Linear Interpolation   
+     Take two quaternions and two weights and combine them
+     following a great circle on the unit quaternion 4-D sphere
+     and linear interpolation between the radii
+     
+     This version keeps a quaternion separate from the negative
+     of the same quaternion and is not appropriate for
+     quaternions representing rotations.  Use CQRHLERP
+     to apply SLERP to quaternions representing rotations
+     */
+    
+    int CQRSLERP (CQRQuaternionHandle quaternion, const CQRQuaternionHandle q1, const CQRQuaternionHandle q2,
+                  const double w1, const double w2)
+    {
+        CQRQuaternion s1;
+        CQRQuaternion s2;
+        CQRQuaternion st1;
+        CQRQuaternion st2;
+        CQRQuaternion sout;
+        CQRQuaternion sout2;
+        double normsq, norm1sq, norm2sq;
+        double r1,r2, cosomega,sinomega, omega;
+        double t, t1, t2;
+        
+        if (!quaternion || !q1 || !q2 ) return CQR_BAD_ARGUMENT;
+
+        CQRMNormsq(norm1sq,*q1);
+        CQRMNormsq(norm2sq,*q2);        
+        
+        t = w1/(w1+w2);
+        
+        if (norm1sq <= DBL_MIN) {
+            CQRMScalarMultiply(*quaternion,*q2,(1-t));
+            return CQR_SUCCESS;
+        }
+        
+        if (norm2sq <= DBL_MIN) {
+            CQRMScalarMultiply(*quaternion,*q1,t);
+            return CQR_SUCCESS;
+        }
+        
+        if (fabs(norm1sq-1.)<= DBL_MIN) {
+            r1 = 1.;
+            CQRMCopy(s1,*q1);
+        } else {
+            r1 = sqrt(norm1sq);
+            CQRMScalarMultiply(s1,*q1,(1/r1));
+        }
+        
+        if (fabs(norm2sq-1.)<= DBL_MIN) {
+            r2 = 1.;
+            CQRMCopy(s2,*q2);
+        } else {
+            r2 = sqrt(norm1sq);
+            CQRMScalarMultiply(s2,*q2,(1/r2));
+        }
+        
+        CQRMDot(cosomega,s1,s2);
+        if (cosomega>=1. || cosomega<=-1.) {
+            sinomega = 0.;
+        } else {
+            sinomega=sqrt(1.-cosomega*cosomega);
+        }
+        
+        omega=atan2(sinomega,cosomega);
+        
+        if (sinomega <= 0.05) {
+            t1=t*(1-t*t*omega*omega/6.);
+            t2=(1-t)*(1.-(1-t)*(1-t)*omega*omega/6.);
+            CQRMScalarMultiply(st1,s1,t1);
+            CQRMScalarMultiply(st2,s2,t2);
+            if (cosomega >=0.) {
+                CQRMAdd(sout,st1,st2);
+            } else {
+                if (sinomega <= 0.00001) {
+                    sout.w = -st1.x+st2.x;
+                    sout.x =  st1.w-st2.w;
+                    sout.y =  st1.z-st2.z;
+                    sout.z = -st1.y+st2.y;
+                } else {
+                    CQRMAdd(sout,s1,s2);
+                }
+                CQRMNormsq(normsq,sout);
+                CQRMScalarMultiply(sout,sout,1/sqrt(normsq));
+                if (t >= 0.5) {
+                    CQRSLERP(&sout2,&sout,&s1,2-2.*t,2.*t-1.);
+                    CQRMCopy(sout,sout2);
+                }else {
+                    CQRSLERP(&sout2,&sout,&s2,2.*t,1.-2.*t-1.);
+                    CQRMCopy(sout,sout2);
+               }
+            }
+            CQRMNormsq(normsq,sout);
+            if (normsq <= DBL_MIN) {
+                CQRMSet(*quaternion,0.,0.,0.,0.);
+            } else {
+                CQRMScalarMultiply(*quaternion,sout,(t*r1+(1-t)*r2)/sqrt(normsq));
+            }
+            return CQR_SUCCESS;
+        }
+        
+        t1 = sin(t*omega);
+        t2 = sin((1-t)*omega);
+        CQRMScalarMultiply(st1,s1,t1);
+        CQRMScalarMultiply(st2,s2,t2);
+        CQRMAdd(sout,st1,st2);
+        CQRMNormsq(normsq,sout);
+        CQRMScalarMultiply(*quaternion,sout,(r1*t+r2*(1-t))/sqrt(normsq));
+        return CQR_SUCCESS;        
+    }
+    
+    
+    /*  HLERP -- Hemispherical Linear Interpolation   
+     Take two quaternions and two weights and combine them
+     following a great circle on the unit quaternion 4-D sphere
+     and linear interpolation between the radii
+     
+     This is the hemispherical version, for use with quaternions
+     representing rotations.  Use SLERP for full
+     spherical interpolation.
+     
+     */
+    
+    int CQRHLERP (CQRQuaternionHandle quaternion, const CQRQuaternionHandle q1, const CQRQuaternionHandle q2,
+                  const double w1, const double w2)
+    {
+        CQRQuaternion s1;
+        CQRQuaternion s2;
+        CQRQuaternion st1;
+        CQRQuaternion st2;
+        CQRQuaternion sout;
+        double normsq, norm1sq, norm2sq;
+        double r1,r2, cosomega,sinomega, omega;
+        double t, t1, t2;
+        
+        if (!quaternion || !q1 || !q2 ) return CQR_BAD_ARGUMENT;
+
+        CQRMNormsq(norm1sq,*q1);
+        CQRMNormsq(norm2sq,*q2);        
+        
+        t = w1/(w1+w2);
+        
+        if (norm1sq <= DBL_MIN) {
+            CQRMScalarMultiply(*quaternion,*q2,(1-t));
+            return CQR_SUCCESS;
+        }
+        
+        if (norm2sq <= DBL_MIN) {
+            CQRMScalarMultiply(*quaternion,*q1,t);
+            return CQR_SUCCESS;
+        }
+        
+        if (fabs(norm1sq-1.)<= DBL_MIN) {
+            r1 = 1.;
+            CQRMCopy(s1,*q1);
+        } else {
+            r1 = sqrt(norm1sq);
+            CQRMScalarMultiply(s1,*q1,(1/r1));
+        }
+        
+        if (fabs(norm2sq-1.)<= DBL_MIN) {
+            r2 = 1.;
+            CQRMCopy(s2,*q2);
+        } else {
+            r2 = sqrt(norm1sq);
+            CQRMScalarMultiply(s2,*q2,(1/r2));
+        }
+        
+        CQRMDot(cosomega,s1,s2);
+        if (cosomega>=1. || cosomega<=-1.) {
+            sinomega = 0.;
+        } else {
+            sinomega=sqrt(1.-cosomega*cosomega);
+        }
+        
+        if (cosomega < 0.) {
+            if (t < 0.5) {
+                s1.w=-s1.w;s1.x=-s1.x;s1.y=-s1.y;s1.z=-s1.z; 
+            } else {
+                s2.w=-s2.w;s2.x=-s2.x;s2.y=-s2.y;s2.z=-s2.z; 
+            }
+            cosomega = -cosomega;
+        }
+        
+        omega=atan2(sinomega,cosomega);
+        
+        if (sinomega <= 0.05) {
+            t1=t*(1-t*t*omega*omega/6.);
+            t2=(1-t)*(1.-(1-t)*(1-t)*omega*omega/6.);
+            CQRMScalarMultiply(st1,s1,t1);
+            CQRMScalarMultiply(st2,s2,t2);
+            CQRMAdd(sout,st1,st2);
+            if (sout.w < 0.) {
+                sout.w = -sout.w;
+                sout.x = -sout.x;
+                sout.y = -sout.y;
+                sout.z = -sout.z;
+            }
+            CQRMNormsq(normsq,sout);
+            if (normsq <= DBL_MIN) {
+                CQRMSet(*quaternion,0.,0.,0.,0.);
+            } else {
+                CQRMScalarMultiply(*quaternion,sout,(t*r1+(1-t)*r2)/sqrt(normsq));
+            }
+            return CQR_SUCCESS;
+        }
+        
+        t1 = sin(t*omega);
+        t2 = sin((1-t)*omega);
+        CQRMScalarMultiply(st1,s1,t1);
+        CQRMScalarMultiply(st2,s2,t2);
+        CQRMAdd(sout,st1,st2);
+        if (sout.w < 0.) {
+            sout.w = -sout.w;
+            sout.x = -sout.x;
+            sout.y = -sout.y;
+            sout.z = -sout.z;
+        }
+        CQRMNormsq(normsq,sout);
+        CQRMScalarMultiply(*quaternion,sout,(r1*t+r2*(1-t))/sqrt(normsq));
+        return CQR_SUCCESS;                
+    }
+    
+    /*  SLERPDist -- Spherical Linear Interpolation distance
+     Form the distance between two quaternions by summing
+     the difference in the magnitude of the radii and
+     the great circle distance along the sphere of the
+     smaller quaternion.
+     
+     This version keeps a quaternion separate from the negative
+     of the same quaternion and is not appropriate for
+     quaternions representing rotations.  Use CQRHLERPDist
+     to apply SLERPDist to quaternions representing rotations
+     */
+    
+    int CQRSLERPDist (double CQR_FAR * dist, const CQRQuaternionHandle q1, const CQRQuaternionHandle q2)
+    {
+        CQRQuaternion s1;
+        CQRQuaternion s2;
+        double norm1sq, norm2sq;
+        double r1,r2, cosomega,sinomega, omega;
+
+        
+        if (!dist || !q1 || !q2) return CQR_BAD_ARGUMENT;
+        
+        CQRMNormsq(norm1sq,*q1);
+        CQRMNormsq(norm2sq,*q2);        
+
+        if (norm1sq <= DBL_MIN) {*dist = sqrt(norm2sq); return CQR_SUCCESS;}
+        
+        if (norm2sq <= DBL_MIN) {*dist = sqrt(norm1sq); return CQR_SUCCESS;}
+        
+        if (fabs(norm1sq-1.)<= DBL_MIN) {
+            r1 = 1.;
+            CQRMCopy(s1,*q1);
+        } else {
+            r1 = sqrt(norm1sq);
+            CQRMScalarMultiply(s1,*q1,(1/r1));
+        }
+        
+        if (fabs(norm2sq-1.)<= DBL_MIN) {
+            r2 = 1.;
+            CQRMCopy(s2,*q2);
+        } else {
+            r2 = sqrt(norm1sq);
+            CQRMScalarMultiply(s2,*q2,(1/r2));
+        }
+        
+        CQRMDot(cosomega,s1,s2);
+        if (cosomega>=1. || cosomega<=-1.) {
+            sinomega = 0.;
+        } else {
+            sinomega=sqrt(1.-cosomega*cosomega);
+        }
+        
+        omega=atan2(sinomega,cosomega);
+        if (r1 <= r2) *dist = (r2-r1)+r1*fabs(omega);
+        else *dist = (r1-r2)+r2*fabs(omega);
+        
+        return CQR_SUCCESS;
+        
+    }
+    
+    /*  HLERPDist -- Hemispherical Linear Interpolation distance
+     Form the distance between two quaternions by summing
+     the difference in the magnitude of the radii and
+     the great circle distance along the sphere of the
+     smaller quaternion.
+     
+     This version keeps a quaternion separate from the negative
+     of the same quaternion and is not appropriate for
+     quaternions representing rotations.  Use CQRHLERPDist
+     to apply SLERPDist to quaternions representing rotations
+     */
+    
+    int HLERPDist (double CQR_FAR * dist, const CQRQuaternionHandle q1, const CQRQuaternionHandle q2)
+    {
+        CQRQuaternion s1;
+        CQRQuaternion s2;
+        double norm1sq, norm2sq;
+        double r1,r2, cosomega,sinomega, omega;
+        
+        if (!dist || !q1 || !q2) return CQR_BAD_ARGUMENT;
+
+        CQRMNormsq(norm1sq,*q1);
+        CQRMNormsq(norm2sq,*q2);        
+        
+        if (norm1sq <= DBL_MIN) {*dist = sqrt(norm2sq); return CQR_SUCCESS;}
+        
+        if (norm2sq <= DBL_MIN) {*dist = sqrt(norm1sq); return CQR_SUCCESS;}
+        
+        if (fabs(norm1sq-1.)<= DBL_MIN) {
+            r1 = 1.;
+            CQRMCopy(s1,*q1);
+        } else {
+            r1 = sqrt(norm1sq);
+            CQRMScalarMultiply(s1,*q1,(1/r1));
+        }
+        
+        if (fabs(norm2sq-1.)<= DBL_MIN) {
+            r2 = 1.;
+            CQRMCopy(s2,*q2);
+        } else {
+            r2 = sqrt(norm1sq);
+            CQRMScalarMultiply(s2,*q2,(1/r2));
+        }
+        
+        CQRMDot(cosomega,s1,s2);
+        if (cosomega>=1. || cosomega<=-1.) {
+            sinomega = 0.;
+        } else {
+            sinomega=sqrt(1.-cosomega*cosomega);
+        }
+        
+        if (cosomega < 0.) {
+             cosomega = -cosomega;
+        }
+        
+        omega=atan2(sinomega,cosomega);
+        if (r1 <= r2) *dist = (r2-r1)+r1*fabs(omega);
+        else *dist = (r1-r2)+r2*fabs(omega);
+        
+        return CQR_SUCCESS;
+    }
+    
+    
     
 #ifdef __cplusplus
     
