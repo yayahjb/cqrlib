@@ -934,10 +934,6 @@ inline DistanceType SLERPDist (const CPPQR& q) const
  the great circle distance along the sphere of the
  smaller quaternion.
  
- This version keeps a quaternion separate from the negative
- of the same quaternion and is not appropriate for
- quaternions representing rotations.  Use CQRHLERPDist
- to apply SLERPDist to quaternions representing rotations
  */
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
@@ -1138,7 +1134,7 @@ CQRMScalarMultiply(inverserq,1./normsq); \
     
     /*  CQRNorm -- Form the norm of a quaternion */
     
-    int CQRNormsq (double CQR_FAR * norm, CQRQuaternionHandle quaternion ) ;
+    int CQRNorm (double CQR_FAR * norm, CQRQuaternionHandle quaternion ) ;
     
     /*  CQRInverse -- Form the inverse of a quaternion */
     
@@ -1227,7 +1223,7 @@ CQRMScalarMultiply(inverserq,1./normsq); \
      to apply SLERPDist to quaternions representing rotations
      */
     
-    int HLERPDist (double CQR_FAR * dist, const CQRQuaternionHandle q1, const CQRQuaternionHandle q2);
+    int CQRHLERPDist (double CQR_FAR * dist, const CQRQuaternionHandle q1, const CQRQuaternionHandle q2);
     
 #ifdef __cplusplus
     
