@@ -797,7 +797,7 @@ extern "C" {
         return CQR_SUCCESS;                
     }
     
-    /*  SLERPDist -- Spherical Linear Interpolation distance
+    /*  CQRSLERPDist -- Spherical Linear Interpolation distance
      Form the distance between two quaternions by summing
      the difference in the magnitude of the radii and
      the great circle distance along the sphere of the
@@ -857,7 +857,7 @@ extern "C" {
         
     }
     
-    /*  HLERPDist -- Hemispherical Linear Interpolation distance
+    /*  CQRHLERPDist -- Hemispherical Linear Interpolation distance
      Form the distance between two quaternions by summing
      the difference in the magnitude of the radii and
      the great circle distance along the sphere of the
@@ -869,7 +869,7 @@ extern "C" {
      to apply SLERPDist to quaternions representing rotations
      */
     
-    int HLERPDist (double CQR_FAR * dist, const CQRQuaternionHandle q1, const CQRQuaternionHandle q2)
+    int CQRHLERPDist (double CQR_FAR * dist, const CQRQuaternionHandle q1, const CQRQuaternionHandle q2)
     {
         CQRQuaternion s1;
         CQRQuaternion s2;
