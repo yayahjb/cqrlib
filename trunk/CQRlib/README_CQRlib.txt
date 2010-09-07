@@ -1,20 +1,23 @@
+
                  CQRlib -- ANSI C API for Quaternion Rotations
 
-                                 Release 1.0.6
-                                  22 July 2010
+                                  Release 1.1
+                                6 September 2010
                    (c) 2008, 2009, 2010 Herbert J. Bernstein
                       yaya at bernstein-plus-sons dot com
                 You may distribute the CQRlib API under the LGPL
 
-   The 1.0.6 release fixed an error in the CQRHLERPDist definition and
-   comments. The 1.0.5 release added SLERP/HLERP support in C++ and C, moved
-   from the vector project. The 1.0.4 release added a version of L. Andrews
-   adaptation to a C++ template. The 1.0.3 release changed from use of a FAR
-   macro to use of a CQR_FAR macro to avoid name conflicts. the macros for
-   malloc, free, memmove and memset were also changed. The 1.0.2 release of
-   14 June 2009 corrected the Makefile for case-sensitive file systems and to
-   include -lm in loading. Release 1.0.1 of 23 February 2009 was a minor
-   documentation update to the original 1.0 release of 22 February 2009.
+   The 1.1 release added functions for log, exp, power and root, added a
+   macro form of the norm and fixed the macro for inverse. The 1.0.6 release
+   fixed an error in the CQRHLERPDist definition and comments. The 1.0.5
+   release added SLERP/HLERP support in C++ and C, moved from the vector
+   project. The 1.0.4 release added a version of L. Andrews adaptation to a
+   C++ template. The 1.0.3 release changed from use of a FAR macro to use of
+   a CQR_FAR macro to avoid name conflicts. the macros for malloc, free,
+   memmove and memset were also changed. The 1.0.2 release of 14 June 2009
+   corrected the Makefile for case-sensitive file systems and to include -lm
+   in loading. Release 1.0.1 of 23 February 2009 was a minor documentation
+   update to the original 1.0 release of 22 February 2009.
 
    CQRlib is an ANSI C implementation of a utility library for quaternion
    arithmetic and quaternion rotation math. See
@@ -36,11 +39,11 @@
 
    The CQRlib package is available at www.sourceforge.net/projects/cqrlib. A
    source tarball is available at
-   downloads.sourceforge.net/cqrlib/CQRlib-1.0.6.tar.gz. Later tarballs may
-   be available.
+   downloads.sourceforge.net/cqrlib/CQRlib-1.1.tar.gz. Later tarballs may be
+   available.
 
    When the source tarball is downloaded and unpacked, you should have a
-   directory CQRlib-1.0.6. To see the current settings for a build execute
+   directory CQRlib-1.1. To see the current settings for a build execute
 
    make
 
@@ -58,8 +61,8 @@
  
   The current library C and C++ link commands are:
  
-    /Users/yaya/bin/libtool --mode=link gcc -version-info 2:0:0 -rpath /Users/yaya/lib
-    /Users/yaya/bin/libtool --mode=link g++ -version-info 2:0:0 -rpath /Users/yaya/lib
+    /Users/yaya/bin/libtool --mode=link gcc -version-info 3:0:1 -rpath /Users/yaya/lib
+    /Users/yaya/bin/libtool --mode=link g++ -version-info 3:0:1 -rpath /Users/yaya/lib
  
   The current C library local, dynamic and static build commands are:
  
@@ -134,6 +137,63 @@
      /* CQRSetQuaternion -- create an existing quaternion = w +ix+jy+kz */
     
      int CQRSetQuaternion( CQRQuaternionHandle quaternion, double w, double x, double y, double z);
+
+     /* CQRGetQuaternionW -- get the w component of a quaternion */
+    
+     int CQRGetQuaternionW( double CQR_FAR * qw, CQRQuaternionHandle q );
+    
+     /* CQRGetQuaternionX -- get the x component of a quaternion */
+    
+     int CQRGetQuaternionX( double CQR_FAR * qx, CQRQuaternionHandle q );
+    
+     /* CQRGetQuaternionY -- get the y component of a quaternion */
+    
+     int CQRGetQuaternionY( double CQR_FAR * qy, CQRQuaternionHandle q );
+    
+     /* CQRGetQuaternionZ -- get the z component of a quaternion */
+    
+     int CQRGetQuaternionZ( double CQR_FAR * qz, CQRQuaternionHandle q );
+    
+     /* CQRGetQuaternionIm -- get the imaginary component of a quaternion */
+    
+     int CQRGetQuaternionIm( CQRQuaternionHandle quaternion, CQRQuaternionHandle q );
+    
+     /* CQRGetQuaternionAxis -- get the axis for the polar representation of a quaternion */
+    
+     int CQRGetQuaternionAxis( CQRQuaternionHandle quaternion, CQRQuaternionHandle q );
+    
+     /* CQRGetQuaternionAngle -- get the angular component of the polar representation
+      of aquaternion */
+    
+     int CQRGetQuaternionAngle( double CQR_FAR * angle, CQRQuaternionHandle q );
+    
+     /* CQRLog -- get the natural logarithm of a quaternion */
+    
+     int CQRLog( CQRQuaternionHandle quaternion, CQRQuaternionHandle q );
+    
+     /* CQRExp -- get the exponential (exp) of a quaternion */
+    
+     int CQRExp( CQRQuaternionHandle quaternion, CQRQuaternionHandle q );
+    
+     /* CQRQuaternionPower -- take a quarernion to a quaternion power */
+    
+     int CQRQuaternionPower( CQRQuaternionHandle quaternion, CQRQuaternionHandle q, CQRQuaternionHandle p);
+    
+     /* CQRDoublePower -- take a quarernion to a double power */
+    
+     int CQRDoublePower( CQRQuaternionHandle quaternion, CQRQuaternionHandle q, double p);
+    
+     /* CQRIntegerPower -- take a quaternion to an integer power */
+    
+     int CQRIntegerPower( CQRQuaternionHandle quaternion, CQRQuaternionHandle q, int p);
+    
+     /* CQRIntegerRoot -- take the given integer root  of a quaternion, returning
+      the indicated mth choice from among multiple roots.
+      For reals the cycle runs through first the i-based
+      roots, then the j-based roots and then the k-based roots,
+      out of the infinite number of possible roots of reals. */
+    
+     int CQRIntegerRoot( CQRQuaternionHandle quaternion, CQRQuaternionHandle q, int r, int m);
 
      /*  CQRAdd -- add a quaternion (q1) to a quaternion (q2) */
     
@@ -247,6 +307,9 @@
           inline DistanceType GetX( void ) const;
           inline DistanceType GetY( void ) const;
           inline DistanceType GetZ( void ) const;
+          inline CPPQR GetIm( void ) const;
+          inline CPPQR GetAxis( void ) const;
+          inline double GetAngle( void ) const;
          
       /* Operators */
           inline CPPQR operator+ ( const CPPQR& q ) const;
@@ -275,6 +338,20 @@
 
       /* Inverse -- Form the inverse of a quaternion */
           inline CPPQR Inverse ( void ) const;
+         
+      /* log -- Get the natural logarithm of a quaternion */
+          inline CPPQR log( void ) const;
+         
+      /* exp -- Get the exponential of a quaternion */
+          inline CPPQR exp( void ) const;
+         
+      /* pow -- Take a power of a quaternion */
+          template
+          inline CPPQR pow( const powertype p) const;
+          inline CPPQR pow( const int p) const;
+         
+      /* root -- Take an integer root of a quaternion */
+          inline CPPQR root( const int r, const int m) const;
 
       /* RotateByQuaternion -- Rotate a vector by a Quaternion, w = qvq* */
           inline void RotateByQuaternion(VectorType &w, const VectorType v );
@@ -351,6 +428,14 @@
    squares of the components. CQRInverse computes the inverse of a non-zero
    quaternion.
 
+   The functions CQRGetQuaternionW, CQRGetQuaternionX, CQRGetQuaternionY and
+   CQRGetQuaternionZ extract the 4 components of a quaternion. The function
+   CQRGetQuaternionIm extract the imaginary part of a quaternion as a
+   quaternion with w=0. The function CQRQGetQuaternion extracts the imaginary
+   part and normalizes it to a unit vector. The function
+   CQRGetQuaternionAngle extracts the angle for the polar representation of a
+   quaternion as an exponential (see below).
+
    In handling rotations, a right-handed system is assumed.
    CQRRotateByQuaternion rotates a vector by a quaternion, w = qvq*.
    CQRAxis2Quaternion forms the quaternion for a rotation around axis v by
@@ -359,6 +444,32 @@
    quaternion. CQRQuaternion2Angles converts a quaternion into Euler Angles
    for the Rz(Ry(Rx))) convention. CQRAngles2Quaternion convert Euler angles
    for the Rz(Ry(Rx))) convention into a quaternion.
+
+   The logarithm of a quaternion in CQRLog is based on the polar
+   representation
+
+   q = r*cos(theta) + r*sin(theta) [ i*axis_x + j*axis_y +k*axis_z]
+   = r*exp(theta*[ i*axis_x + j*axis_y +k*axis_z])
+
+   with a unit axis. Then the natural logarithm is given by
+
+   log(q) = log(r) + theta*[ i*axis_x + j*axis_y +k*axis_z])
+
+   Note than any integer multiple of 2*PI could have been added to theta, so
+   the logarithm is multivalued. The code only returns one of these values.
+   The exponential in CQRExp is created by reversing the transformation.
+   Taking a quaternion to a quaternion power is done by taking the log,
+   multiplying by the power and then taking the exponential. Only one
+   representative power is returned by CQRQuaternionPower. CQRDoublePower
+   takes a quaternion to a double power by the same log-multiply-exp
+   approach. CQRIntegerPower applies positive and negative integer powers by
+   multiplication withou taking any logs or exponentials. CQRIntegerRoot
+   applies the log-multiply-exp approach for integer roots. The second
+   integer argument allow selection of one of the multiple roots. For roots
+   of quaternions with a non-zero imaginary part, there are r roots, so m =
+   0, 1, 2, ... r-1 are meaningful. For roots of reals, there can be
+   infinitely many alternate roots. In the case, m will cycle first through
+   the i-based roots, then the j-based roots and then the k-based roots.
 
    The SLERP and HLERP functions combine quaternions by speherical linear
    interpolation. SLERP take two quaternions and two weights and combine them
@@ -446,5 +557,5 @@
 
      ----------------------------------------------------------------------
 
-   Updated 22 July 2010
+   Updated 6 September 2010
    yaya at bernstein-plus-sons dot com

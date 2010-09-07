@@ -145,6 +145,147 @@ inline DistanceType GetZ( void ) const
     return( z );
 }
 
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+inline CPPQR GetIm( void ) const
+{
+    return( CPPQR(0.,x,y,z) );
+}
+
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+inline CPPQR GetAxis( void ) const
+{
+    DistanceType anorm=sqrt((double)(x*x + y*y + z*z));
+    if (anorm < DBL_MIN) return(CPPQR(0.,0.,0.,0.));
+    return( CPPQR(0.,x/anorm,y/anorm,z/anorm) );
+}
+
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+inline double GetAngle( void ) const
+{
+    double cosangle, sinangle;
+    DistanceType radius, anorm;
+    radius = sqrt( (double) (w*w + x*x + y*y + z*z) );
+    anorm = sqrt( (double) (x*x + y*y + z*z) );
+    if ( anorm <= DBL_MIN) {
+        return 0.;
+    }
+    cosangle = w/radius;
+    sinangle = anorm/radius;
+    return(atan2(sinangle,cosangle));
+}
+
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+inline CPPQR log( void ) const
+{
+    CPPQR axis = (*this).GetAxis();
+    double PI;
+    double ipnormsq;
+    double angle = (*this).GetAngle();
+    if ( w < 0. ) {
+        ipnormsq = (double) (x*x + y*y + z*z);
+        if (ipnormsq <= DBL_MIN ) {
+            PI = std::atan2(1.,1.)*4.;
+            axis = CPPQR(0.,1.,0.,0.);
+            angle = PI;
+        }
+    }
+    return (CPPQR(std::log((double)((*this).Norm())),axis.x*angle,axis.y*angle,axis.z*angle));
+}
+
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+inline CPPQR exp( void ) const
+{
+    const CPPQR impart = (*this).GetIm( );
+    const double angle = (double)impart.Norm();
+    if (angle <= DBL_MIN) { 
+        return (CPPQR(cos(angle)*std::exp(w),0.,0.,0.));
+    }
+    const double rat = std::exp(w)*sin(angle)/angle;
+    return(CPPQR(cos(angle)*std::exp(w),rat*x,rat*y,rat*z));
+}
+
+template <typename powertype>
+inline CPPQR pow( const powertype p) const {
+    
+    return(((*this).log()*p).exp());
+}
+
+
+inline CPPQR pow( const int p) const {
+    
+    CPPQR qtemp, qaccum;
+    unsigned int ptemp;
+    
+    if ( p == 0 ) return (CPPQR(1.0,0.,0.,0.));
+    else if ( p > 0 ) {
+        qtemp = *this;
+        ptemp = p;
+    } else {
+        qtemp = (*this).Inverse();
+        ptemp = -p;
+    }
+    qaccum = CPPQR(1.0,0.,0.,0.);
+    while(1) {
+        if ((ptemp&1)!= 0) {
+            qaccum *= qtemp;
+        }
+        ptemp >>= 1;
+        if (ptemp==0) break;
+        qtemp *= qtemp;
+    }
+    
+    return qaccum;
+    
+}
+
+/* root -- take the given integer root  of a quaternion, returning
+ the indicated mth choice from among multiple roots.
+ For reals the cycle runs through first the i-based
+ roots, then the j-based roots and then the k-based roots,
+ out of the infinite number of possible roots of negative reals. */
+
+inline CPPQR root( const int r, const int m) const
+{
+
+    const double PI = 4.*atan2(1.,1.);
+    CPPQR qlog,qlogoverr,qaxis;
+    double recip, qaxisnormsq;
+    int cycle;
+    
+    if (r == 0) return CPPQR(DBL_MAX,DBL_MAX,DBL_MAX,DBL_MAX);
+    recip = 1./((double)r);
+    qlog = (*this).log();
+    
+    if (m != 0) {
+        qaxis =(*this).GetAxis();
+        qaxisnormsq = qaxis.Normsq();
+        if (qaxisnormsq <= DBL_MIN) {
+            cycle = (m/r)%3;
+            switch (cycle) {
+                case 1: 
+                    qaxis = CPPQR(0.,0.,1.,0.);
+                    break;
+                case 2: 
+                    qaxis = CPPQR(0.,0.,0.,1.);
+                    break;
+                default: 
+                    qaxis = CPPQR(0.,1.,0.,0.);
+                    break;
+            }
+        }
+        qaxis *= 2.*PI*((double)m);
+        qlog += qaxis;
+    }
+    qlogoverr = qlog*recip;
+    return qlogoverr.exp();    
+}
+
+
 /* Dot product of 2 quaternions as 4-vectors */
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
@@ -172,6 +313,7 @@ inline CPPQR& operator+= ( const CPPQR& q )
     x += q.x;
     y += q.y;
     z += q.z;
+    return *this;
 }
 
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
@@ -181,6 +323,7 @@ inline CPPQR& operator-= ( const CPPQR& q )
     x -= q.x;
     y -= q.y;
     z -= q.z;
+    return *this;
 }
 
 /* Subtract -- subtract a quaternion (q2) from a quaternion (q1)  */  
@@ -220,6 +363,21 @@ inline CPPQR operator* ( const CPPQR& q ) const // multiply two quaternions
     return( temp );
 }
 
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+inline CPPQR& operator*= ( const CPPQR& q )
+{
+    CPPQR temp;
+    temp.w = -z*q.z - y*q.y - x*q.x + w*q.w;
+    temp.x =  y*q.z - z*q.y + w*q.x + x*q.w;
+    temp.y = -x*q.z + w*q.y + z*q.x + y*q.w;
+    temp.z =  w*q.z + x*q.y - y*q.x + z*q.w;
+    w = temp.w;
+    x = temp.x;
+    y = temp.y;
+    z = temp.z;
+    return *this;
+}
+
 /* Divide -- Divide a quaternion (q1) by quaternion (q2)  */
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 inline CPPQR operator/ ( const CPPQR& q2 ) const
@@ -240,6 +398,31 @@ inline CPPQR operator/ ( const CPPQR& q2 ) const
     return( q / norm2sq );
 }
 
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+inline CPPQR& operator/= ( const CPPQR& q2 )
+{
+    const DistanceType norm2sq = q2.w*q2.w + q2.x*q2.x + q2.y*q2.y + q2.z*q2.z;
+    
+    if ( norm2sq == 0.0 )
+    {
+        return( CPPQR( DBL_MAX, DBL_MAX, DBL_MAX, DBL_MAX ) );
+    }
+    
+    CPPQR q;
+    q.w =  z*q2.z + y*q2.y + x*q2.x + w*q2.w;
+    q.x = -y*q2.z + z*q2.y - w*q2.x + x*q2.w;
+    q.y =  x*q2.z - w*q2.y - z*q2.x + y*q2.w;
+    q.z = -w*q2.z - x*q2.y + y*q2.x + z*q2.w;
+    
+    w = q.w/norm2sq;
+    x = q.x/norm2sq;
+    y = q.y/norm2sq;
+    z = q.z/norm2sq;
+    
+    return *this;
+}
+
+
 /* ScalarMultiply -- multiply a quaternion (q) by scalar (s)  */
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 inline CPPQR operator* ( const DistanceType& d ) const // multiply by a constant
@@ -251,6 +434,36 @@ inline CPPQR operator* ( const DistanceType& d ) const // multiply by a constant
     temp.z = z*d;
     return( temp );
 }
+
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+inline CPPQR& operator*= ( const DistanceType& d )
+{    
+    w *= d;
+    x *= d;
+    y *= d;
+    z *= d;
+    return *this;
+}
+
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+inline CPPQR& operator/= ( const DistanceType& d )
+{
+    if ( std::abs((double)d) <= DBL_MIN ) {
+        w = DBL_MAX;
+        x = DBL_MAX;
+        y = DBL_MAX;
+        z = DBL_MAX;
+        
+    } else {
+        
+        w /= d;
+        x /= d;
+        y /= d;
+        z /= d;
+    }
+    return *this;
+}
+
 
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 inline CPPQR operator/ ( const DistanceType& d ) const // divide by a constant
@@ -282,7 +495,7 @@ inline DistanceType Normsq ( void ) const
     return( w*w + x*x + y*y + z*z );
 }
 
-/* Normsq -- Form the norm of a quaternion */
+/* Norm -- Form the norm of a quaternion */
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 inline DistanceType Norm ( void ) const
 {
@@ -1035,6 +1248,9 @@ extern "C" {
     
     /* CQR Macros */
     
+#define CQRMIm(impart,q) \
+(impart).w = 0.; (impart).x = (q).x; (impart).y = (q).y; (impart).z = (q).z;
+    
 #define CQRMCopy(copy,orig) \
 (copy).w = (orig).w; (copy).x = (orig).x; (copy).y = (orig).y; (copy).z = (orig).z;
 
@@ -1071,12 +1287,16 @@ dotprod = (q1).w*(q2).w + (q1).x*(q2).x + (q1).y*(q2).y + (q1).z*(q2).z;
 #define CQRMNormsq(normsq,q) \
 normsq = (q).w*(q).w + (q).x*(q).x + (q).y*(q).y + (q).z*(q).z;
 
+#define CQRMNorm(norm,q) \
+norm = sqrt((q).w*(q).w + (q).x*(q).x + (q).y*(q).y + (q).z*(q).z);
+
 #define CQRMInverse(inverseq,q) \
 { double normsq; \
 CQRMConjugate(inverseq,q); \
 CQRMNormsq(normsq,q); \
 if (normsq > 0.) { \
-CQRMScalarMultiply(inverserq,1./normsq); \
+CQRMScalarMultiply(inverseq,inverseq,1./normsq); \
+} \
 }
     
     
@@ -1096,6 +1316,63 @@ CQRMScalarMultiply(inverserq,1./normsq); \
     
     int CQRSetQuaternion( CQRQuaternionHandle quaternion, double w, double x, double y, double z);
 
+    /* CQRGetQuaternionW -- get the w component of a quaternion */
+    
+    int CQRGetQuaternionW( double CQR_FAR * qw, CQRQuaternionHandle q );
+    
+    /* CQRGetQuaternionX -- get the x component of a quaternion */
+    
+    int CQRGetQuaternionX( double CQR_FAR * qx, CQRQuaternionHandle q );
+    
+    /* CQRGetQuaternionY -- get the y component of a quaternion */
+    
+    int CQRGetQuaternionY( double CQR_FAR * qy, CQRQuaternionHandle q );
+    
+    /* CQRGetQuaternionZ -- get the z component of a quaternion */
+    
+    int CQRGetQuaternionZ( double CQR_FAR * qz, CQRQuaternionHandle q );
+    
+    /* CQRGetQuaternionIm -- get the imaginary component of a quaternion */
+    
+    int CQRGetQuaternionIm( CQRQuaternionHandle quaternion, CQRQuaternionHandle q );
+    
+    /* CQRGetQuaternionAxis -- get the axis for the polar representation of a quaternion */
+    
+    int CQRGetQuaternionAxis( CQRQuaternionHandle quaternion, CQRQuaternionHandle q );
+    
+    /* CQRGetQuaternionAngle -- get the angular component of the polar representation
+     of aquaternion */
+    
+    int CQRGetQuaternionAngle( double CQR_FAR * angle, CQRQuaternionHandle q );
+    
+    /* CQRLog -- get the natural logarithm of a quaternion */
+    
+    int CQRLog( CQRQuaternionHandle quaternion, CQRQuaternionHandle q );
+    
+    /* CQRExp -- get the exponential (exp) of a quaternion */
+    
+    int CQRExp( CQRQuaternionHandle quaternion, CQRQuaternionHandle q ); 
+    
+    /* CQRQuaternionPower -- take a quarernion to a quaternion power */
+    
+    int CQRQuaternionPower( CQRQuaternionHandle quaternion, CQRQuaternionHandle q, CQRQuaternionHandle p);
+    
+    /* CQRDoublePower -- take a quarernion to a double power */
+    
+    int CQRDoublePower( CQRQuaternionHandle quaternion, CQRQuaternionHandle q, double p);
+    
+    /* CQRIntegerPower -- take a quaternion to an integer power */
+    
+    int CQRIntegerPower( CQRQuaternionHandle quaternion, CQRQuaternionHandle q, int p);
+    
+    /* CQRIntegerRoot -- take the given integer root  of a quaternion, returning
+     the indicated mth choice from among multiple roots.
+     For reals the cycle runs through first the i-based
+     roots, then the j-based roots and then the k-based roots,
+     out of the infinite number of possible roots of reals. */
+    
+    int CQRIntegerRoot( CQRQuaternionHandle quaternion, CQRQuaternionHandle q, int r, int m);
+    
     /*  CQRAdd -- add a quaternion (q1) to a quaternion (q2) */
     
     int CQRAdd (CQRQuaternionHandle quaternion,  CQRQuaternionHandle q1, CQRQuaternionHandle q2 );

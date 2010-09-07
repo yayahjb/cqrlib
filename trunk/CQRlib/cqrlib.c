@@ -129,6 +129,296 @@ extern "C" {
         
     }
     
+    /* CQRGetQuaternionW -- get the w component of a quaternion */
+    
+    int CQRGetQuaternionW( double CQR_FAR * qw, CQRQuaternionHandle q ) {
+        
+        if (!qw || ! q) return CQR_BAD_ARGUMENT;
+        
+        *qw = q->w;
+        
+        return CQR_SUCCESS;
+    
+    }
+
+    /* CQRGetQuaternionX -- get the x component of a quaternion */
+    
+    int CQRGetQuaternionX( double CQR_FAR * qx, CQRQuaternionHandle q ) {
+        
+        if (!qx || ! q) return CQR_BAD_ARGUMENT;
+        
+        *qx = q->x;
+        
+        return CQR_SUCCESS;
+        
+    }
+
+    /* CQRGetQuaternionY -- get the y component of a quaternion */
+    
+    int CQRGetQuaternionY( double CQR_FAR * qy, CQRQuaternionHandle q ) {
+        
+        if (!qy || ! q) return CQR_BAD_ARGUMENT;
+        
+        *qy = q->y;
+        
+        return CQR_SUCCESS;
+        
+    }
+
+    /* CQRGetQuaternionZ -- get the z component of a quaternion */
+    
+    int CQRGetQuaternionZ( double CQR_FAR * qz, CQRQuaternionHandle q ) {
+        
+        if (!qz || ! q) return CQR_BAD_ARGUMENT;
+        
+        *qz = q->z;
+        
+        return CQR_SUCCESS;
+        
+    }
+    
+    /* CQRGetQuaternionIm -- get the imaginary component of a quaternion */
+    
+    int CQRGetQuaternionIm( CQRQuaternionHandle quaternion, CQRQuaternionHandle q ) {
+        
+        if (!quaternion || ! q) return CQR_BAD_ARGUMENT;
+        
+        quaternion->w = 0.;
+        quaternion->x = q->x;
+        quaternion->y = q->y;
+        quaternion->z = q->z;
+        
+        return CQR_SUCCESS;
+        
+    }
+    
+    /* CQRGetQuaternionAxis -- get the axis for the polar representation of a quaternion */
+    
+    int CQRGetQuaternionAxis( CQRQuaternionHandle quaternion, CQRQuaternionHandle q ) {
+        
+        double anorm;
+        
+        if (!quaternion || ! q) return CQR_BAD_ARGUMENT;
+        
+        anorm = sqrt((q->x)*(q->x)+(q->y)*(q->y)+(q->z)*(q->z));
+        
+        if (anorm < DBL_MIN) {
+            
+            quaternion->w = 0.;
+            quaternion->x = 0.;
+            quaternion->y = 0.;
+            quaternion->z = 0.;
+            
+            
+        } else {
+        
+            quaternion->w = 0.;
+            quaternion->x = q->x/anorm;
+            quaternion->y = q->y/anorm;
+            quaternion->z = q->z/anorm;
+
+        }
+        
+        return CQR_SUCCESS;
+        
+    }
+    
+    
+    /* CQRGetQuaternionAngle -- get the angular component of the polar representation
+       of aquaternion */
+    
+    int CQRGetQuaternionAngle( double CQR_FAR * angle, CQRQuaternionHandle q ) {
+        
+        double cosangle, sinangle;
+        double radius, anorm;
+        
+        if (!angle || ! q) return CQR_BAD_ARGUMENT;
+        
+        radius = sqrt( (q->w)*(q->w) + (q->x)*(q->x) + (q->y)*(q->y) + (q->z)*(q->z) );
+        anorm = sqrt( (q->x)*(q->x) + (q->y)*(q->y) + (q->z)*(q->z) );
+        if ( anorm <= DBL_MIN) {
+            return 0.;
+        }
+        cosangle = (q->w)/radius;
+        sinangle = anorm/radius;
+        *angle = atan2(sinangle,cosangle);
+        
+        return CQR_SUCCESS;
+        
+    }
+    
+    /* CQRLog -- get the natural logarithm of a quaternion */
+    
+    int CQRLog( CQRQuaternionHandle quaternion, CQRQuaternionHandle q ) {
+        
+        CQRQuaternion axis;
+        double angle;
+        double ipnormsq;
+        double PI;
+        
+        if (!quaternion || ! q) return CQR_BAD_ARGUMENT;
+        
+        CQRGetQuaternionAxis(&axis,q);
+        CQRGetQuaternionAngle(&angle,q);
+        
+        if (q->w < 0.) {
+            ipnormsq = (q->x)*(q->x) + (q->y)*(q->y) + (q->z)*(q->z);
+            if (ipnormsq <= DBL_MIN ) {
+                PI = atan2(1.,1.)*4.;
+                CQRMSet(axis,0.,1.,0.,0.);
+                angle = PI;
+            }
+            
+        }
+        
+        quaternion->w = log(sqrt((q->w)*(q->w) + (q->x)*(q->x) + (q->y)*(q->y) + (q->z)*(q->z) ));
+        quaternion->x = axis.x*angle;
+        quaternion->y = axis.y*angle;
+        quaternion->z = axis.z*angle;
+        
+        return CQR_SUCCESS;
+        
+    }
+    
+    /* CQRExp -- get the exponential (exp) of a quaternion */
+                            
+    int CQRExp( CQRQuaternionHandle quaternion, CQRQuaternionHandle q ) {
+                            
+        CQRQuaternion impart;
+        double angle;
+        double rat;
+                            
+        if (!quaternion || ! q) return CQR_BAD_ARGUMENT;
+                            
+        CQRGetQuaternionIm(&impart,q);
+        CQRMNorm(angle,impart);
+        
+        if (angle <= DBL_MIN) {
+                            
+            quaternion->w = cos(angle)*exp(q->w);
+            quaternion->x = 0.;
+            quaternion->y = 0.;
+            quaternion->z = 0.;
+            
+        } else {
+            
+            rat = exp(q->w)*sin(angle)/angle;
+            quaternion->w = cos(angle)*exp(q->w);
+            quaternion->x = rat*q->x;
+            quaternion->y = rat*q->y;
+            quaternion->z = rat*q->z;
+            
+        }
+        
+        return CQR_SUCCESS;
+                                                
+    }
+
+    /* CQRQuaternionPower -- take a quaternion to a quaternion power */
+    
+    int CQRQuaternionPower( CQRQuaternionHandle quaternion, CQRQuaternionHandle q, CQRQuaternionHandle p) {
+        
+        CQRQuaternion qlog,qlogtimesp;
+        
+        CQRLog(&qlog,q);
+        CQRMMultiply(qlogtimesp,qlog,*p);
+        CQRExp(quaternion,&qlogtimesp);
+        
+        return CQR_SUCCESS;
+        
+    }
+
+    /* CQRDoublePower -- take a quarernion to a double power */
+    
+    int CQRDoublePower( CQRQuaternionHandle quaternion, CQRQuaternionHandle q, double p) {
+        
+        CQRQuaternion qlog,qlogtimesp;
+        
+        CQRLog(&qlog,q);
+        CQRMScalarMultiply(qlogtimesp,qlog,p);
+        CQRExp(quaternion,&qlogtimesp);
+        
+        return CQR_SUCCESS;
+        
+    }
+ 
+    /* CQRIntegerPower -- take a quaternion to an integer power */
+    
+    int CQRIntegerPower( CQRQuaternionHandle quaternion, CQRQuaternionHandle q, int p) {
+        
+        CQRQuaternion qtemp, qsq, qprod;
+        unsigned int ptemp;
+        
+        CQRMSet(*quaternion,1.0,0.,0.,0.);
+        if ( p == 0 ) return CQR_SUCCESS;
+        else if ( p > 0 ) {
+            CQRMCopy(qtemp,*q);
+            ptemp = p;
+        } else {
+            CQRMInverse(qtemp,*q);
+            ptemp = -p;
+        }
+        while(1) {
+            if ((ptemp&1)!= 0) {
+                CQRMMultiply(qprod,*quaternion,qtemp);
+                CQRMCopy(*quaternion,qprod);
+            }
+            ptemp >>= 1;
+            if (ptemp==0) break;
+            CQRMMultiply(qsq,qtemp,qtemp);
+            CQRMCopy(qtemp,qsq)
+        }
+        
+        return CQR_SUCCESS;
+        
+    }
+
+    /* CQRIntegerRoot -- take the given integer root  of a quaternion, returning
+                         the indicated mth choice from among multiple roots.
+                         For reals the cycle runs through first the i-based
+                         roots, then the j-based roots and then the k-based roots,
+                         out of the infinite number of possible roots of reals. */
+    
+    int CQRIntegerRoot( CQRQuaternionHandle quaternion, CQRQuaternionHandle q, int r, int m) {
+        
+        
+        double PI;
+        CQRQuaternion qlog,qlogoverr,qaxis;
+        double recip, qaxisnormsq;
+        int cycle;
+        
+        PI  = 4.*atan2(1.,1.);
+        if (r == 0) return CQR_BAD_ARGUMENT;
+        recip = 1./((double)r);
+        CQRLog(&qlog,q);
+        
+        if (m != 0) {
+            CQRGetQuaternionAxis(&qaxis,q);
+            CQRMNormsq(qaxisnormsq,qaxis);
+            if (qaxisnormsq <= DBL_MIN) {
+                cycle = (m/r)%3;
+                switch (cycle) {
+                    case 1: 
+                        CQRMSet(qaxis,0.,0.,1.,0.);
+                        break;
+                    case 2: 
+                        CQRMSet(qaxis,0.,0.,0.,1.);
+                        break;
+                    default: 
+                        CQRMSet(qaxis,0.,1.,0.,0.);
+                        break;
+                }
+            }
+            CQRMScalarMultiply(qaxis,qaxis,2.*PI*((double)m));
+            CQRMAdd(qlog,qlog,qaxis);
+        }
+        CQRMScalarMultiply(qlogoverr,qlog,recip);
+        CQRExp(quaternion,&qlogoverr);
+        
+        return CQR_SUCCESS;
+        
+    }
+    
     /*  CQRAdd -- add a quaternion (q1) to a quaternion (q2) */
     
     int CQRAdd (CQRQuaternionHandle quaternion,  CQRQuaternionHandle q1, CQRQuaternionHandle q2 ) {
