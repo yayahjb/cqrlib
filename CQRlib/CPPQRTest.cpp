@@ -324,8 +324,126 @@ int main ( )
         if ( q1.GetW() != q1[0] || q1.GetX() != q1[1] || q1.GetY() != q1[2] || q1.GetZ() != q1[3] )
         {
             errorcount++;
-            fprintf( stdout, "operator[] failed\n" );
+            fprintf( stdout, "component fetches failed\n" );
         }
     }
+    
+    /*  Tests on [-sqrt(7),2,3,4] = 6*[-sqrt(7)/6,1/3,1/2,2/3]  
+        = 6*[-cos(1.11412994158827),sin(1.11412994158827)*[.3713906763541037, .5570860145311556, .7427813527082074]]
+        = 6*[cos(2.027462712001523),sin(2.027462712001523)*[.3713906763541037, .5570860145311556, .7427813527082074]]
+        = 6*exp([0,.3713906763541037, .5570860145311556, .7427813527082074]*2.027462712001523)
+     
+        so the log should be
+     
+        [log(6),0,0,0] +[0,.3713906763541037, .5570860145311556, .7427813527082074]*2.027462712001523]
+        =[1.791759469228055, 0.752980747892971, 1.129471121839456, 1.505961495785942]
+     
+        Note that the log is multivalued
+     
+     */
+    {
+        const CPPQR<double> q1( CPPQR<double>( -sqrt(7.),2,3,4 ));
+        if ( q1.GetIm() != CPPQR<double>( 0,2,3,4 ) )
+        {
+            errorcount++;
+            fprintf( stdout, "GetIm failed\n" );
+        }
+        
+        
+        if ( q1.GetAxis() != CPPQR<double>( 0,2./sqrt(4.+9.+16.),3./sqrt(4.+9.+16.),4./sqrt(4.+9.+16.) ) )
+        {
+            errorcount++;
+            fprintf( stdout, "GetAxis failed\n" );
+        }
+        
+        if (fabs(q1.GetAngle()-2.027462712001523)>10.*DBL_EPSILON*2.027462712001523)
+        {
+            errorcount++;
+            fprintf( stdout, "GetAngle failed, got %g, expected %g\n",q1.GetAngle(),2.027462712001523 );
+        }
+        
+        
+        if ((q1.log() - CPPQR<double>(log(6.), 0.752980747892971, 1.129471121839457, 1.505961495785942)).Norm() > 
+            10.*DBL_EPSILON*q1.log().Norm())
+        {
+            errorcount++;
+            fprintf( stdout, "quaternion log failed log([%g,%g,%g,%g]) = [%g,%g,%g,%g] instead of [%g,%g,%g,%g], normdiff = %g\n",
+                    q1.GetW(), q1.GetX(), q1.GetY(), q1.GetZ(),
+                    q1.log().GetW(), q1.log().GetX(), q1.log().GetY(), q1.log().GetZ(),
+                    log(6.), 0.752980747892971, 1.129471121839457, 1.505961495785942,
+                    (q1.log() - CPPQR<double>(log(6.), 0.752980747892971, 1.129471121839457, 1.505961495785942)).Norm()
+            );
+
+        }
+        
+        if (((q1.log()).exp()-q1).Norm()>10.*DBL_EPSILON*q1.Norm() || 
+            ((q1.exp()).log().exp()-q1.exp()).Norm()>10.*DBL_EPSILON*q1.exp().Norm())
+        {
+            errorcount++;
+            fprintf( stdout, "log(exp) or exp(log) failed\n," 
+                   " q = [%g,%g,%g,%g],"
+                   " log = [%g,%g,%g,%g], exp(log) = [%g,%g,%g,%g],"
+                   " exp = [%g,%g,%g,%g], log(exp) = [%g,%g,%g,%g]\n",
+                    q1.GetW(),q1.GetX(),q1.GetY(),q1.GetZ(),
+                    q1.log().GetW(),q1.log().GetX(),q1.log().GetY(),q1.log().GetZ(),
+                    q1.log().exp().GetW(),q1.log().exp().GetX(),q1.log().exp().GetY(),q1.log().exp().GetZ(),
+                    q1.exp().GetW(),q1.exp().GetX(),q1.exp().GetY(),q1.exp().GetZ(),
+                    q1.exp().log().exp().GetW(),q1.exp().log().exp().GetX(),q1.exp().log().exp().GetY(),q1.exp().log().exp().GetZ()
+            );
+        }
+        
+        for (int i = -5; i < 6; i++) {
+            if ((q1.pow(i) - q1.pow(double(i))).Norm() > 10.*DBL_EPSILON*(q1.pow(i)).Norm())
+            {
+                errorcount++;
+                fprintf( stdout, "integer power double power comparison failed\n,"); 
+
+            }
+        }
+        
+        
+    }
+    
+    {
+        const CPPQR<double> q1( CPPQR<double>( -4.,0.,0.,0. ));
+        const CPPQR<double> q2( CPPQR<double>( -4.,1.,1.,1. ));
+        const CPPQR<double> q3( CPPQR<double>( 4.,0.,0.,0. ));
+        CPPQR <double> qout1, qout2, qout3, qtest1, qtest2, qtest3;
+        
+        for (int i = 1; i < 9; i++) {
+            for (int j = 0; j <  i; j++ ) {
+                qout1 = q1.root(i,j);
+                qout2 = q2.root(i,j);
+                qout3 = q3.root(i,j);
+                qtest1 = qout1.pow(i);
+                qtest2 = qout2.pow(i);
+                qtest3 = qout3.pow(i);
+                if ((q1-qtest1).Norm() > 40.*DBL_EPSILON*q1.Norm()
+                    || (q2-qtest2).Norm() > 40.*DBL_EPSILON*q2.Norm()
+                    || (q3-qtest3).Norm() > 40.*DBL_EPSILON*q3.Norm()) {
+                    errorcount++;
+                    fprintf(stdout," %d'th root of [%g,%g,%g,%g] = [%g,%g,%g,%g], power = [%g,%g,%g,%g], delta %g\n",
+                        i, q1.GetW(), q1.GetX(), q1.GetY(), q1.GetZ(),
+                        qout1.GetW(), qout1.GetX(), qout1.GetY(), qout1.GetZ(),
+                        qtest1.GetW(), qtest1.GetX(), qtest1.GetY(), qtest1.GetZ(),
+                        (q1-qtest1).Norm());
+                    fprintf(stdout," %d'th root of [%g,%g,%g,%g] = [%g,%g,%g,%g], power = [%g,%g,%g,%g], delta %g\n",
+                        i, q2.GetW(), q2.GetX(), q2.GetY(), q2.GetZ(),
+                            qout2.GetW(), qout2.GetX(), qout2.GetY(), qout2.GetZ(),
+                            qtest2.GetW(), qtest2.GetX(), qtest2.GetY(), qtest2.GetZ(),
+                            (q2-qtest2).Norm());
+                    fprintf(stdout," %d'th root of [%g,%g,%g,%g] = [%g,%g,%g,%g], power = [%g,%g,%g,%g], delta %g\n",
+                            i, q3.GetW(), q3.GetX(), q3.GetY(), q3.GetZ(),
+                            qout3.GetW(), qout3.GetX(), qout3.GetY(), qout3.GetZ(),
+                            qtest3.GetW(), qtest3.GetX(), qtest3.GetY(), qtest3.GetZ(),
+                            (q3-qtest3).Norm());
+                    
+                }
+            }
+        }
+
+    }
+    
+    
     return errorcount;
 }
