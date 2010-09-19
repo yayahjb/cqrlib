@@ -410,7 +410,7 @@ int main(int argc, char ** argv) {
         CQRMNorm(norm4,q1exp)
         
         if (norm1>40.*DBL_EPSILON*norm3 || 
-            norm2>40..*DBL_EPSILON*norm4)
+            norm2>40.*DBL_EPSILON*norm4)
         {
             errorcount++;
             fprintf( stdout, "log(exp) or exp(log) failed\n," 
