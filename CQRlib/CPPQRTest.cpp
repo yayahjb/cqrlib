@@ -351,7 +351,7 @@ int main ( )
         }
         
         
-        if ( q1.GetAxis() != CPPQR<double>( 0,2./sqrt(4.+9.+16.),3./sqrt(4.+9.+16.),4./sqrt(4.+9.+16.) ) )
+        if ( q1.GetAxis().Dist(CPPQR<double>( 0,2./sqrt(4.+9.+16.),3./sqrt(4.+9.+16.),4./sqrt(4.+9.+16.) ))>100.*DBL_EPSILON )
         {
             errorcount++;
             fprintf( stdout, "GetAxis failed\n" );

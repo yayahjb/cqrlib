@@ -367,9 +367,9 @@ int main(int argc, char ** argv) {
         
         CQRGetQuaternionAxis(&q1axis,&q1);
         
-        if (q1axis.w != 0. || q1axis.x != 2./sqrt(4.+9.+16.) 
-                           || q1axis.y != 3./sqrt(4.+9.+16.) 
-                           || q1axis.z != 4./sqrt(4.+9.+16.) )
+        if (q1axis.w != 0. || fabs(q1axis.x - 2./sqrt(4.+9.+16.)) > 100.*DBL_EPSILON 
+                           || fabs(q1axis.y - 3./sqrt(4.+9.+16.)) > 100.*DBL_EPSILON
+                           || fabs(q1axis.z - 4./sqrt(4.+9.+16.)) > 100.*DBL_EPSILON  )
         {
             errorcount++;
             fprintf( stdout, "CQRGetQuaternionAxis failed\n" );
