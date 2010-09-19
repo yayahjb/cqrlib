@@ -69,19 +69,19 @@ int main ( )
     }
     
     q1 = q4 * q2;
-    if (fabs(q1.GetW()-30.)>DBL_MIN || fabs(q1.GetX())>DBL_MIN || fabs(q1.GetY())>DBL_MIN ||fabs(q1.GetZ())>DBL_MIN )  {
+    if (fabs(q1.GetW()-30.)>300.*DBL_EPSILON || fabs(q1.GetX())>300.*DBL_EPSILON || fabs(q1.GetY())>300.*DBL_EPSILON ||fabs(q1.GetZ())>300.*DBL_EPSILON )  {
         errorcount++;
         fprintf(stdout,"  CPPQRMultiply(q1,&q4,q2)  q1 wrong value [ %g, %g, %g, %g ] != [30.,0.,0.,0.]\n",q1.GetW(),q1.GetX(),q1.GetY(),q1.GetZ());
     }
     
     q3 = q1 / q2;
-    if (fabs(q3.GetW()-1.)>DBL_MIN || fabs(q3.GetX()+2.)>DBL_MIN || fabs(q3.GetY()+3.)>DBL_MIN ||fabs(q3.GetZ()+4.)>DBL_MIN )  {
+    if (fabs(q3.GetW()-1.)>60.*DBL_EPSILON || fabs(q3.GetX()+2.)>60.*DBL_EPSILON || fabs(q3.GetY()+3.)>60.*DBL_EPSILON ||fabs(q3.GetZ()+4.)>60.*DBL_EPSILON )  {
         errorcount++;
         fprintf(stdout,"  CPPQRDivide(q3,q1,q2)  q3 wrong value [ %g, %g, %g, %g ] != [1.,-2.,-3.,-4.]\n",q3.GetW(),q3.GetX(),q3.GetY(),q3.GetZ());
     }
     
     q3 = q2 * 3.0;
-    if (fabs(q3.GetW()-3.)>DBL_MIN || fabs(q3.GetX()-6.)>DBL_MIN || fabs(q3.GetY()-9.)>DBL_MIN ||fabs(q3.GetZ()-12.)>DBL_MIN )  {
+    if (fabs(q3.GetW()-3.)>180.*DBL_EPSILON || fabs(q3.GetX()-6.)>180.*DBL_EPSILON || fabs(q3.GetY()-9.)>180.*DBL_EPSILON ||fabs(q3.GetZ()-12.)>180.*DBL_EPSILON )  {
         errorcount++;
         fprintf(stdout,"  CPPQRScalarMultiply(q3,q2,3.)  q3 wrong value [ %g, %g, %g, %g ] != [3.,6.,9.,12.]\n",q3.GetW(),q3.GetX(),q3.GetY(),q3.GetZ());
     }
@@ -97,14 +97,15 @@ int main ( )
         fprintf(stdout," CPPQREqual(&q4,q2) failed\n");
     }
     
-    if (normsq = q4.Normsq() , normsq !=30.) {
+    normsq = q4.Normsq();
+    if ( fabs(normsq-30.) > 300.*DBL_EPSILON) {
         errorcount++;
-        fprintf(stdout," CPPQRNormsq(&normsq,&q4) failed\n");
+        fprintf(stdout," CPPQRNormsq(&normsq,&q4) failed normsq=%g != 30\n", normsq);
     }
     
     q3 = q4.Inverse( );
     
-    if (fabs(q3.GetW() - 1./30.) > DBL_MIN  ||  fabs(q3.GetX() - 2./30.) > DBL_MIN || fabs(q3.GetY() - 3./30.) > DBL_MIN || fabs(q3.GetZ() - 4./30.) > DBL_MIN) {
+    if (fabs(q3.GetW() - 1./30.) > 2.*DBL_EPSILON  ||  fabs(q3.GetX() - 2./30.) > 2.*DBL_EPSILON || fabs(q3.GetY() - 3./30.) > 2.*DBL_EPSILON || fabs(q3.GetZ() - 4./30.) > 2.*DBL_EPSILON) {
         errorcount++;
         fprintf(stdout," CPPQRInverse(q3,&q4) q3 wrong value [ %g, %g, %g, %g ] != [1./30.,2./30.,3./30,4./30.]\n",q3.GetW(),q3.GetX(),q3.GetY(),q3.GetZ());
     }
@@ -116,19 +117,19 @@ int main ( )
     qy = CPPQR<double>::Axis2Quaternion( vy, PI/2.0 );
     qz = CPPQR<double>::Axis2Quaternion( vz, PI/2.0 );
     
-    if (qx.GetW()<0.||fabs(qx.GetW()*qx.GetW()-.5)>1.e-13||fabs(qx.GetX()*qx.GetX()-.5)>1.e-13||fabs(qx.GetY())>DBL_MIN||fabs(qx.GetZ())>DBL_MIN) {
+    if (qx.GetW()<0.||fabs(qx.GetW()*qx.GetW()-.5)>10.*DBL_EPSILON||fabs(qx.GetX()*qx.GetX()-.5)>10.*DBL_EPSILON||fabs(qx.GetY())>10.*DBL_EPSILON||fabs(qx.GetZ())>10.*DBL_EPSILON) {
         errorcount++;
         fprintf(stdout,"Axis2Quaternion qx wrong value [ %g, %g, %g, %g ] != [sqrt(1./2.),sqrt(1./2.),0,0]\n",qx.GetW(),qx.GetX(),qx.GetY(),qx.GetZ());
     }
     
     
-    if (qy.GetW()<0.||fabs(qy.GetW()*qy.GetW()-.5)>1.e-13||fabs(qy.GetY()*qy.GetY()-.5)>1.e-13||fabs(qy.GetX())>DBL_MIN||fabs(qy.GetZ())>DBL_MIN) {
+    if (qy.GetW()<0.||fabs(qy.GetW()*qy.GetW()-.5)>10.*DBL_EPSILON||fabs(qy.GetY()*qy.GetY()-.5)>10.*DBL_EPSILON||fabs(qy.GetX())>10.*DBL_EPSILON||fabs(qy.GetZ())>10.*DBL_EPSILON) {
         errorcount++;
         fprintf(stdout,"Axis2Quaternion qy wrong value [ %g, %g, %g, %g ] != [sqrt(1./2.),sqrt(1./2.),0,0]\n",qy.GetW(),qy.GetX(),qy.GetY(),qy.GetZ());
     }
     
     
-    if (qz.GetW()<0.||fabs(qz.GetW()*qz.GetW()-.5)>1.e-13||fabs(qz.GetZ()*qz.GetZ()-.5)>1.e-13||fabs(qz.GetX())>DBL_MIN||fabs(qz.GetY())>DBL_MIN) {
+    if (qz.GetW()<0.||fabs(qz.GetW()*qz.GetW()-.5)>10.*DBL_EPSILON||fabs(qz.GetZ()*qz.GetZ()-.5)>10.*DBL_EPSILON||fabs(qz.GetX())>10.*DBL_EPSILON||fabs(qz.GetY())>10.*DBL_EPSILON) {
         errorcount++;
         fprintf(stdout,"CPPAxis2Quaternion qz wrong value [ %g, %g, %g, %g ] != [sqrt(1./2.),sqrt(1./2.),0,0]\n",qz.GetW(),qz.GetX(),qz.GetY(),qz.GetZ());
     }
@@ -141,10 +142,10 @@ int main ( )
     CPPQR<double>::Quaternion2Matrix(Maty,qy);
     CPPQR<double>::Quaternion2Matrix(Matz,qz);
     
-    if (  fabs(Matx[0]-1.)>1.e-13 ||fabs(Matx[5]+1.)>1.e-13  ||fabs(Matx[7]-1.)>1.e-13
-        ||fabs(Matx[1])>1.e-13    ||fabs(Matx[2])>1.e-13
-        ||fabs(Matx[3])>1.e-13    ||fabs(Matx[4])>1.e-13
-        ||fabs(Matx[6])>1.e-13    ||fabs(Matx[8])>1.e-13) {
+    if (  fabs(Matx[0]-1.)>10.*DBL_EPSILON ||fabs(Matx[5]+1.)>10.*DBL_EPSILON  ||fabs(Matx[7]-1.)>10.*DBL_EPSILON
+        ||fabs(Matx[1])>10.*DBL_EPSILON    ||fabs(Matx[2])>10.*DBL_EPSILON
+        ||fabs(Matx[3])>10.*DBL_EPSILON    ||fabs(Matx[4])>10.*DBL_EPSILON
+        ||fabs(Matx[6])>10.*DBL_EPSILON    ||fabs(Matx[8])>10.*DBL_EPSILON) {
         errorcount++;
         fprintf(stdout," Quaternion2Matrix Matx wrong value \n  [ %g, %g, %g ]\n  [ %g, %g, %g ]\n  [ %g, %g, %g ]\n"
                 "!=  [1, 0, 0]\n    [0, 0, -1]\n    [0, 1, 0]\n",
@@ -153,10 +154,10 @@ int main ( )
                 Matx[6],Matx[7]-1.0,Matx[8]);
     }
     
-    if (fabs(Maty[2]-1.)>1.e-13 ||fabs(Maty[4]-1.)>1.e-13||fabs(Maty[6]+1.)>1.e-13
-        ||fabs(Maty[0])>1.e-13 ||fabs(Maty[1])>1.e-13
-        ||fabs(Maty[3])>1.e-13 ||fabs(Maty[5])>1.e-13
-        ||fabs(Maty[7])>1.e-13 ||fabs(Maty[8])>1.e-13) {
+    if (fabs(Maty[2]-1.)>10.*DBL_EPSILON ||fabs(Maty[4]-1.)>10.*DBL_EPSILON||fabs(Maty[6]+1.)>10.*DBL_EPSILON
+        ||fabs(Maty[0])>10.*DBL_EPSILON ||fabs(Maty[1])>10.*DBL_EPSILON
+        ||fabs(Maty[3])>10.*DBL_EPSILON ||fabs(Maty[5])>10.*DBL_EPSILON
+        ||fabs(Maty[7])>10.*DBL_EPSILON ||fabs(Maty[8])>10.*DBL_EPSILON) {
         errorcount++;
         fprintf(stdout," Quaternion2Matrix Maty wrong value \n  [ %g, %g, %g]\n  [ %g, %g, %g]\n  [ %g, %g, %g ]\n"
                 "!=  [0, 0, 1]\n    [0, 1, 0]\n    [-1, 0, 0]\n",
@@ -165,10 +166,10 @@ int main ( )
                 Maty[6]+1.0,Maty[7],Maty[8]);
     }
     
-    if (fabs(Matz[1]+1.)>1.e-13 ||fabs(Matz[3]-1.)>1.e-13||fabs(Matz[8]-1.)>1.e-13
-        ||fabs(Matz[0])>1.e-13 ||fabs(Matz[2])>1.e-13
-        ||fabs(Matz[4])>1.e-13 ||fabs(Matz[5])>1.e-13
-        ||fabs(Matz[6])>1.e-13 ||fabs(Matz[7])>1.e-13) {
+    if (fabs(Matz[1]+1.)>10.*DBL_EPSILON ||fabs(Matz[3]-1.)>10.*DBL_EPSILON||fabs(Matz[8]-1.)>10.*DBL_EPSILON
+        ||fabs(Matz[0])>10.*DBL_EPSILON ||fabs(Matz[2])>10.*DBL_EPSILON
+        ||fabs(Matz[4])>10.*DBL_EPSILON ||fabs(Matz[5])>10.*DBL_EPSILON
+        ||fabs(Matz[6])>10.*DBL_EPSILON ||fabs(Matz[7])>10.*DBL_EPSILON) {
         errorcount++;
         fprintf(stdout," Quaternion2Matrix Matz wrong value \n  [ %g, %g, %g]\n  [ %g, %g, %g]\n  [ %g, %g, %g ]\n"
                 "!=  [0, -1, 0]\n    [1, 0, 0]\n    [0, 0, 1]\n",
@@ -192,7 +193,7 @@ int main ( )
     q4 = qx / q1;
     normsq = q4.Normsq( );
     
-    if ( fabs(normsq-1.) > 1.e-13 || fabs(q4.GetW()*q4.GetW()-1.) > 1.e-13) {
+    if ( fabs(normsq-1.) > 10.*DBL_EPSILON || fabs(q4.GetW()*q4.GetW()-1.) > 10.*DBL_EPSILON) {
         errorcount++;
         fprintf(stdout," Angles2Quaternion q1 wrong value [%g, %g, %g, %g] != +/-[%g, %g, %g, %g]\n",
                 qx.GetW(), qx.GetX(), qx.GetY(), qx.GetZ(), q1.GetW(), q1.GetX(), q1.GetY(), q1.GetZ() );  
@@ -200,14 +201,14 @@ int main ( )
     
     q4 = qy / q2;
     normsq = q4.Normsq( );
-    if (fabs(normsq-1.) > 1.e-13 || fabs(q4.GetW()*q4.GetW()-1.) > 1.e-13) {
+    if (fabs(normsq-1.) > 10.*DBL_EPSILON || fabs(q4.GetW()*q4.GetW()-1.) > 10.*DBL_EPSILON) {
         fprintf(stdout," Angles2Quaternion q2 wrong value [%g, %g, %g, %g] != +/-[%g, %g, %g, %g]\n",
                 qy.GetW(), qy.GetX(), qy.GetY(), qy.GetZ(), q2.GetW(), q2.GetX(), q2.GetY(), q2.GetZ() );  
     }
     
     q4 = qz / q3;
     normsq = q4.Normsq( );
-    if (abs(normsq-1.) > 1.e-13 || fabs(q4.GetW()*q4.GetW()-1.) > 1.e-13) {
+    if (abs(normsq-1.) > 10.*DBL_EPSILON || fabs(q4.GetW()*q4.GetW()-1.) > 10.*DBL_EPSILON) {
         fprintf(stdout," Angles2Quaternion q3 wrong value [%g, %g, %g, %g] != +/-[%g, %g, %g, %g]\n",
                 qz.GetW(), qz.GetX(), qz.GetY(), qz.GetZ(), q3.GetW(), q3.GetX(), q3.GetY(), q3.GetZ() );  
     }
@@ -356,7 +357,7 @@ int main ( )
             fprintf( stdout, "GetAxis failed\n" );
         }
         
-        if (fabs(q1.GetAngle()-2.027462712001523)>10.*DBL_EPSILON*2.027462712001523)
+        if (fabs(q1.GetAngle()-2.027462712001523)>40.*DBL_EPSILON*2.027462712001523)
         {
             errorcount++;
             fprintf( stdout, "GetAngle failed, got %g, expected %g\n",q1.GetAngle(),2.027462712001523 );
@@ -364,7 +365,7 @@ int main ( )
         
         
         if ((q1.log() - CPPQR<double>(log(6.), 0.752980747892971, 1.129471121839457, 1.505961495785942)).Norm() > 
-            10.*DBL_EPSILON*q1.log().Norm())
+            40.*DBL_EPSILON*q1.log().Norm())
         {
             errorcount++;
             fprintf( stdout, "quaternion log failed log([%g,%g,%g,%g]) = [%g,%g,%g,%g] instead of [%g,%g,%g,%g], normdiff = %g\n",
@@ -418,9 +419,9 @@ int main ( )
                 qtest1 = qout1.pow(i);
                 qtest2 = qout2.pow(i);
                 qtest3 = qout3.pow(i);
-                if ((q1-qtest1).Norm() > 40.*DBL_EPSILON*q1.Norm()
-                    || (q2-qtest2).Norm() > 40.*DBL_EPSILON*q2.Norm()
-                    || (q3-qtest3).Norm() > 40.*DBL_EPSILON*q3.Norm()) {
+                if (q1.Dist(qtest1) > 100.*DBL_EPSILON*q1.Norm()
+                    || q2.Dist(qtest2) > 100.*DBL_EPSILON*q2.Norm()
+                    || q3.Dist(qtest3) > 100.*DBL_EPSILON*q3.Norm()) {
                     errorcount++;
                     fprintf(stdout," %d'th root of [%g,%g,%g,%g] = [%g,%g,%g,%g], power = [%g,%g,%g,%g], delta %g\n",
                         i, q1.GetW(), q1.GetX(), q1.GetY(), q1.GetZ(),
