@@ -147,7 +147,7 @@ int main(int argc, char ** argv) {
         fprintf(stderr," CQRMultiply(q1,&q4,q2) failed\n");
     }
     
-    if (fabs(q1->w-30.)>300.*DBL_EPSILON || fabs(q1->x)>30.*DBL_EPSILON || fabs(q1->y)>30.*DBL_EPSILON ||fabs(q1->z)>30.*DBL_EPSILON )  {
+    if (fabs(q1->w-30.)>300.*DBL_EPSILON || fabs(q1->x)>300.*DBL_EPSILON || fabs(q1->y)>300.*DBL_EPSILON ||fabs(q1->z)>300.*DBL_EPSILON )  {
         errorcount++;
         fprintf(stderr,"  CQRMultiply(q1,&q4,q2)  q1 wrong value [ %g, %g, %g, %g ] != [30.,0.,0.,0.]\n",q1->w,q1->x,q1->y,q1->z);
     }
@@ -409,8 +409,8 @@ int main(int argc, char ** argv) {
         CQRMNorm(norm3,q1);
         CQRMNorm(norm4,q1exp)
         
-        if (norm1>10.*DBL_EPSILON*norm3 || 
-            norm2>10.*DBL_EPSILON*norm4)
+        if (norm1>40.*DBL_EPSILON*norm3 || 
+            norm2>40..*DBL_EPSILON*norm4)
         {
             errorcount++;
             fprintf( stdout, "log(exp) or exp(log) failed\n," 
@@ -431,7 +431,7 @@ int main(int argc, char ** argv) {
              CQRMSubtract(qtemp,q1powd,q1powi);
              CQRMNorm(norm,qtemp);
              CQRMNorm(norm1,q1powi);
-            if (norm > 10.*DBL_EPSILON*norm1)
+            if (norm > 40.*DBL_EPSILON*norm1)
             {
                 errorcount++;
                 fprintf( stdout, "integer power double power comparison failed\n,"); 

@@ -1,23 +1,25 @@
 
                  CQRlib -- ANSI C API for Quaternion Rotations
 
-                                  Release 1.1
-                                6 September 2010
+                                 Release 1.1.1
+                               18 September 2010
                    (c) 2008, 2009, 2010 Herbert J. Bernstein
                       yaya at bernstein-plus-sons dot com
                 You may distribute the CQRlib API under the LGPL
 
-   The 1.1 release added functions for log, exp, power and root, added a
-   macro form of the norm and fixed the macro for inverse. The 1.0.6 release
-   fixed an error in the CQRHLERPDist definition and comments. The 1.0.5
-   release added SLERP/HLERP support in C++ and C, moved from the vector
-   project. The 1.0.4 release added a version of L. Andrews adaptation to a
-   C++ template. The 1.0.3 release changed from use of a FAR macro to use of
-   a CQR_FAR macro to avoid name conflicts. the macros for malloc, free,
-   memmove and memset were also changed. The 1.0.2 release of 14 June 2009
-   corrected the Makefile for case-sensitive file systems and to include -lm
-   in loading. Release 1.0.1 of 23 February 2009 was a minor documentation
-   update to the original 1.0 release of 22 February 2009.
+   The 1.1.1 release relaxed some of the test constraints and parametrized
+   the tests against DBL_EPSILON and added the Dist and Distsq functions. The
+   1.1 release added functions for log, exp, power and root, added a macro
+   form of the norm and fixed the macro for inverse. The 1.0.6 release fixed
+   an error in the CQRHLERPDist definition and comments. The 1.0.5 release
+   added SLERP/HLERP support in C++ and C, moved from the vector project. The
+   1.0.4 release added a version of L. Andrews adaptation to a C++ template.
+   The 1.0.3 release changed from use of a FAR macro to use of a CQR_FAR
+   macro to avoid name conflicts. the macros for malloc, free, memmove and
+   memset were also changed. The 1.0.2 release of 14 June 2009 corrected the
+   Makefile for case-sensitive file systems and to include -lm in loading.
+   Release 1.0.1 of 23 February 2009 was a minor documentation update to the
+   original 1.0 release of 22 February 2009.
 
    CQRlib is an ANSI C implementation of a utility library for quaternion
    arithmetic and quaternion rotation math. See
@@ -39,11 +41,11 @@
 
    The CQRlib package is available at www.sourceforge.net/projects/cqrlib. A
    source tarball is available at
-   downloads.sourceforge.net/cqrlib/CQRlib-1.1.tar.gz. Later tarballs may be
-   available.
+   downloads.sourceforge.net/cqrlib/CQRlib-1.1.1.tar.gz. Later tarballs may
+   be available.
 
    When the source tarball is downloaded and unpacked, you should have a
-   directory CQRlib-1.1. To see the current settings for a build execute
+   directory CQRlib-1.1.1 To see the current settings for a build execute
 
    make
 
@@ -235,6 +237,14 @@
     
      int CQRNorm (double * norm, CQRQuaternionHandle quaternion ) ;
 
+     /*  CQRDistsq -- Form the distance squared between two quaternions */
+    
+     int CQRDistsq (double CQR_FAR * distsq, CQRQuaternionHandle q1, CQRQuaternionHandle q2) ;
+    
+     /*  CQRDist -- Form the distance between two quaternions */
+    
+     int CQRDist (double CQR_FAR * dist, CQRQuaternionHandle q1, CQRQuaternionHandle q2 ) ;
+    
      /*  CQRInverse -- Form the inverse of a quaternion */
     
      int CQRInverse (CQRQuaternionHandle inversequaternion, CQRQuaternionHandle quaternion );
@@ -335,6 +345,12 @@
 
       /* Norm -- Form the norm of a quaternion */
           inline DistanceType Norm ( void ) const;
+
+      /* Distsq -- Form the distance squared from a quaternion */
+          inline DistanceType Distsq ( const CPPQR& q ) const;
+
+      /* Dist -- Form the distance from a quaternion */
+          inline DistanceType Dist ( const CPPQR& q ) const;
 
       /* Inverse -- Form the inverse of a quaternion */
           inline CPPQR Inverse ( void ) const;
@@ -557,5 +573,5 @@
 
      ----------------------------------------------------------------------
 
-   Updated 6 September 2010
+   Updated 18 September 2010
    yaya at bernstein-plus-sons dot com

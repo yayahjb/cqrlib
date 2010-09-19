@@ -8,8 +8,8 @@
 <h3 align="center">CQRlib -- ANSI C API for Quaternion Rotations</h3>
 <P>
 <center>
-Release 1.1<br />
-6 September 2010<br />
+Release 1.1.1<br />
+18 September 2010<br />
 &#169; 2008, 2009, 2010 Herbert J. Bernstein<br/>
 <script language="javascript" type="text/javascript">
 <!-- 
@@ -25,6 +25,8 @@ yaya <b>at</b> bernstein-plus-sons <b>dot</b> com
 You may distribute the CQRlib API under the <a href=lgpl.txt style="text-decoration:none">LGPL</a><br />
 </center>
 <P>
+The 1.1.1 release relaxed some of the test constraints and parametrized the tests against DBL_EPSILON
+and added the Dist and Distsq functions.
 The 1.1 release added functions for log, exp, power and root, added a macro form of the
 norm and fixed the macro for inverse.
 The 1.0.6 release fixed an error in the CQRHLERPDist definition and comments.
@@ -58,11 +60,11 @@ Any opinions, findings, and conclusions or recommendations expressed in this mat
 <P>
 The CQRlib package is available at <a href="http://www.sourceforge.net/projects/cqrlib">www.sourceforge.net/projects/cqrlib</a>.
 A source tarball is available at <a 
-href="http://downloads.sourceforge.net/cqrlib/CQRlib-1.1.tar.gz">downloads.sourceforge.net/cqrlib/CQRlib-1.1.tar.gz</a>.
+href="http://downloads.sourceforge.net/cqrlib/CQRlib-1.1.1.tar.gz">downloads.sourceforge.net/cqrlib/CQRlib-1.1.1.tar.gz</a>.
 Later tarballs may be available.
 
 <P>
-When the source tarball is downloaded and unpacked, you should have a directory CQRlib-1.1.  To see the 
+When the source tarball is downloaded and unpacked, you should have a directory CQRlib-1.1.1  To see the 
 current settings for a build
 execute
 <p>
@@ -261,6 +263,14 @@ define the variable USE_LOCAL_HEADERS
     
     int CQRNorm (double * norm, CQRQuaternionHandle quaternion ) ;
 
+    /*  CQRDistsq -- Form the distance squared between two quaternions */
+    
+    int CQRDistsq (double CQR_FAR * distsq, CQRQuaternionHandle q1, CQRQuaternionHandle q2) ;
+    
+    /*  CQRDist -- Form the distance between two quaternions */
+    
+    int CQRDist (double CQR_FAR * dist, CQRQuaternionHandle q1, CQRQuaternionHandle q2 ) ;
+    
     /*  CQRInverse -- Form the inverse of a quaternion */
     
     int CQRInverse (CQRQuaternionHandle inversequaternion, CQRQuaternionHandle quaternion );
@@ -318,7 +328,7 @@ and for C++
 
 <pre>
 <tt>
-template< typename DistanceType=double, typename VectorType=double[3], typename MatrixType=double[9] >
+template&lt; typename DistanceType=double, typename VectorType=double[3], typename MatrixType=double[9] &gt;
 class CPPQR
 {
 
@@ -358,13 +368,19 @@ public:
          DistanceType operator[] ( const int k ) const;
 
      /* Dot -- Dot product of 2 quaternions as 4-vectors */
-         inline DistanceType Dot( const CPPQR& q) const;
+         inline DistanceType Dot( const CPPQR&amp; q) const;
 
      /* Normsq -- Form the normsquared of a quaternion */
          inline DistanceType Normsq ( void ) const;
 
      /* Norm -- Form the norm of a quaternion */
          inline DistanceType Norm ( void ) const;
+
+     /* Distsq -- Form the distance squared from a quaternion */
+         inline DistanceType Distsq ( const CPPQR&amp; q ) const;
+
+     /* Dist -- Form the distance from a quaternion */
+         inline DistanceType Dist ( const CPPQR&amp; q ) const;
 
      /* Inverse -- Form the inverse of a quaternion */
          inline CPPQR Inverse ( void ) const;
@@ -410,16 +426,16 @@ public:
          static inline CPPQR Point2Quaternion( const DistanceType v[3] );
 
      /*  SLERP -- Spherical Linear Interpolation  */
-         inline CPPQR SLERP (const CPPQR& q, DistanceType w1, DistanceType w2) const;
+         inline CPPQR SLERP (const CPPQR&amp; q, DistanceType w1, DistanceType w2) const;
 
      /*  HLERP -- Hemispherical Linear Interpolation */
-         inline CPPQR HLERP (const CPPQR& q, DistanceType w1, DistanceType w2) const;
+         inline CPPQR HLERP (const CPPQR&amp; q, DistanceType w1, DistanceType w2) const;
 
      /*  SLERPDist -- Spherical Linear Interpolation distance */
-         inline DistanceType SLERPDist (const CPPQR& q) const;
+         inline DistanceType SLERPDist (const CPPQR&amp; q) const;
 
      /*  HLERPDist -- Hemispherical Linear Interpolation distance */
-         inline DistanceType HLERPDist (const CPPQR& q) const;
+         inline DistanceType HLERPDist (const CPPQR&amp; q) const;
 
          
      
@@ -587,7 +603,7 @@ For examples of the use of the CPPQR template, see the C++ test program <a href=
 
 <hr>
 <font size="2">
-Updated 6 September 2010<br />
+Updated 18 September 2010<br />
 <script language="javascript" type="text/javascript">
 <!-- 
       var name = "yaya";
