@@ -147,7 +147,7 @@ int main(int argc, char ** argv) {
         fprintf(stderr," CQRMultiply(q1,&q4,q2) failed\n");
     }
     
-    if (fabs(q1->w-30.)>DBL_MIN || fabs(q1->x)>DBL_MIN || fabs(q1->y)>DBL_MIN ||fabs(q1->z)>DBL_MIN )  {
+    if (fabs(q1->w-30.)>300.*DBL_EPSILON || fabs(q1->x)>30.*DBL_EPSILON || fabs(q1->y)>30.*DBL_EPSILON ||fabs(q1->z)>30.*DBL_EPSILON )  {
         errorcount++;
         fprintf(stderr,"  CQRMultiply(q1,&q4,q2)  q1 wrong value [ %g, %g, %g, %g ] != [30.,0.,0.,0.]\n",q1->w,q1->x,q1->y,q1->z);
     }
@@ -157,7 +157,7 @@ int main(int argc, char ** argv) {
         fprintf(stderr," CQRDivide(q3,q1,q2) failed\n");
     }
     
-    if (fabs(q3->w-1.)>DBL_MIN || fabs(q3->x+2.)>DBL_MIN || fabs(q3->y+3.)>DBL_MIN ||fabs(q3->z+4.)>DBL_MIN )  {
+    if (fabs(q3->w-1.)>60.*DBL_EPSILON || fabs(q3->x+2.)>60.*DBL_EPSILON || fabs(q3->y+3.)>60.*DBL_EPSILON ||fabs(q3->z+4.)>60.*DBL_EPSILON )  {
         errorcount++;
         fprintf(stderr,"  CQRDivide(q3,q1,q2)  q3 wrong value [ %g, %g, %g, %g ] != [1.,-2.,-3.,-4.]\n",q3->w,q3->x,q3->y,q3->z);
     }
@@ -167,7 +167,7 @@ int main(int argc, char ** argv) {
         fprintf(stderr," CQRScalarMultiply(q3,q1,3.) failed\n");
     }
     
-    if (fabs(q3->w-3.)>DBL_MIN || fabs(q3->x-6.)>DBL_MIN || fabs(q3->y-9.)>DBL_MIN ||fabs(q3->z-12.)>DBL_MIN )  {
+    if (fabs(q3->w-3.)>180.*DBL_EPSILON || fabs(q3->x-6.)>180.*DBL_EPSILON || fabs(q3->y-9.)>180.*DBL_EPSILON ||fabs(q3->z-12.)>180.*DBL_EPSILON )  {
         errorcount++;
         fprintf(stderr,"  CQRScalarMultiply(q3,q2,3.)  q3 wrong value [ %g, %g, %g, %g ] != [3.,6.,9.,12.]\n",q3->w,q3->x,q3->y,q3->z);
     }
@@ -187,7 +187,7 @@ int main(int argc, char ** argv) {
         fprintf(stderr," CQREqual(&q4,q2) failed\n");
     }
     
-    if (CQRNormsq(&normsq,&q4) || normsq !=30.) {
+    if (CQRNormsq(&normsq,&q4) || fabs(normsq-30.) > 300.*DBL_EPSILON) {
         errorcount++;
         fprintf(stderr," CQRNormsq(&normsq,&q4) failed\n");
     }
@@ -197,7 +197,7 @@ int main(int argc, char ** argv) {
         fprintf(stderr,"CQRInverse(q3,&q4) failed\n");
     }
     
-    if (fabs(q3->w - 1./30.) > DBL_MIN  ||  fabs(q3->x - 2./30.) > DBL_MIN || fabs(q3->y - 3./30.) > DBL_MIN || fabs(q3->z - 4./30.) > DBL_MIN) {
+    if (fabs(q3->w - 1./30.) > 2.*DBL_EPSILON  ||  fabs(q3->x - 2./30.) > 2.*DBL_EPSILON || fabs(q3->y - 3./30.) > 2.*DBL_EPSILON || fabs(q3->z - 4./30.) > 2.*DBL_EPSILON) {
         errorcount++;
         fprintf(stderr," CQRInverse(q3,&q4) q3 wrong value [ %g, %g, %g, %g ] != [1./30.,2./30.,3./30,4./30.]\n",q3->w,q3->x,q3->y,q3->z);
     }
@@ -210,19 +210,19 @@ int main(int argc, char ** argv) {
         fprintf(stderr,"Axis2Quaternion failed\n");
     }
     
-    if (qx.w<0.||fabs(qx.w*qx.w-.5)>1.e-13||fabs(qx.x*qx.x-.5)>1.e-13||fabs(qx.y)>DBL_MIN||fabs(qx.z)>DBL_MIN) {
+    if (qx.w<0.||fabs(qx.w*qx.w-.5)>10.*DBL_EPSILON||fabs(qx.x*qx.x-.5)>10.*DBL_EPSILON||fabs(qx.y)>10.*DBL_EPSILON||fabs(qx.z)>10.*DBL_EPSILON) {
         errorcount++;
         fprintf(stderr,"Axis2Quaternion qx wrong value [ %g, %g, %g, %g ] != [sqrt(1./2.),sqrt(1./2.),0,0]\n",qx.w,qx.x,qx.y,qx.z);
     }
     
     
-    if (qy.w<0.||fabs(qy.w*qy.w-.5)>1.e-13||fabs(qy.y*qy.y-.5)>1.e-13||fabs(qy.x)>DBL_MIN||fabs(qy.z)>DBL_MIN) {
+    if (qy.w<0.||fabs(qy.w*qy.w-.5)>10.*DBL_EPSILON||fabs(qy.y*qy.y-.5)>10.*DBL_EPSILON||fabs(qy.x)>10.*DBL_EPSILON||fabs(qy.z)>10.*DBL_EPSILON) {
         errorcount++;
         fprintf(stderr,"Axis2Quaternion qy wrong value [ %g, %g, %g, %g ] != [sqrt(1./2.),sqrt(1./2.),0,0]\n",qy.w,qy.x,qy.y,qy.z);
     }
     
     
-    if (qz.w<0.||fabs(qz.w*qz.w-.5)>1.e-13||fabs(qz.z*qz.z-.5)>1.e-13||fabs(qz.x)>DBL_MIN||fabs(qz.y)>DBL_MIN) {
+    if (qz.w<0.||fabs(qz.w*qz.w-.5)>10.*DBL_EPSILON||fabs(qz.z*qz.z-.5)>10.*DBL_EPSILON||fabs(qz.x)>10.*DBL_EPSILON||fabs(qz.y)>10.*DBL_EPSILON) {
         errorcount++;
         fprintf(stderr,"Axis2Quaternion qz wrong value [ %g, %g, %g, %g ] != [sqrt(1./2.),sqrt(1./2.),0,0]\n",qz.w,qz.x,qz.y,qz.z);
     }
@@ -232,10 +232,10 @@ int main(int argc, char ** argv) {
         fprintf(stderr," CQRQuaternion2Matrix failed\n");
     }
     
-    if (fabs(Matx[0][0]-1.)>1.e-13 ||fabs(Matx[1][2]+1.)>1.e-13||fabs(Matx[2][1]-1.)>1.e-13
-        ||fabs(Matx[0][1])>1.e-13 ||fabs(Matx[0][2])>1.e-13
-        ||fabs(Matx[1][0])>1.e-13 ||fabs(Matx[1][1])>1.e-13
-        ||fabs(Matx[2][0])>1.e-13 ||fabs(Matx[2][2])>1.e-13) {
+    if (fabs(Matx[0][0]-1.)>10.*DBL_EPSILON ||fabs(Matx[1][2]+1.)>10.*DBL_EPSILON||fabs(Matx[2][1]-1.)>10.*DBL_EPSILON
+        ||fabs(Matx[0][1])>10.*DBL_EPSILON ||fabs(Matx[0][2])>10.*DBL_EPSILON
+        ||fabs(Matx[1][0])>10.*DBL_EPSILON ||fabs(Matx[1][1])>10.*DBL_EPSILON
+        ||fabs(Matx[2][0])>10.*DBL_EPSILON ||fabs(Matx[2][2])>10.*DBL_EPSILON) {
         errorcount++;
         fprintf(stderr," CQRQuaternion2Matrix Matx wrong value \n  [ %g, %g, %g ]\n  [ %g, %g, %g ]\n  [ %g, %g, %g ]\n"
                 "!=  [1, 0, 0]\n    [0, 0, -1]\n    [0, 1, 0]\n",
@@ -244,10 +244,10 @@ int main(int argc, char ** argv) {
                 Matx[2][0],Matx[2][1],Matx[2][2]);
     }
     
-    if (fabs(Maty[0][2]-1.)>1.e-13 ||fabs(Maty[1][1]-1.)>1.e-13||fabs(Maty[2][0]+1.)>1.e-13
-        ||fabs(Maty[0][0])>1.e-13 ||fabs(Maty[0][1])>1.e-13
-        ||fabs(Maty[1][0])>1.e-13 ||fabs(Maty[1][2])>1.e-13
-        ||fabs(Maty[2][1])>1.e-13 ||fabs(Maty[2][2])>1.e-13) {
+    if (fabs(Maty[0][2]-1.)>DBL_EPSILON ||fabs(Maty[1][1]-1.)>DBL_EPSILON||fabs(Maty[2][0]+1.)>DBL_EPSILON
+        ||fabs(Maty[0][0])>DBL_EPSILON ||fabs(Maty[0][1])>DBL_EPSILON
+        ||fabs(Maty[1][0])>DBL_EPSILON ||fabs(Maty[1][2])>DBL_EPSILON
+        ||fabs(Maty[2][1])>DBL_EPSILON ||fabs(Maty[2][2])>DBL_EPSILON) {
         errorcount++;
         fprintf(stderr," CQRQuaternion2Matrix Maty wrong value \n  [ %g, %g, %g]\n  [ %g, %g, %g]\n  [ %g, %g, %g ]\n"
                 "!=  [0, 0, 1]\n    [0, 1, 0]\n    [-1, 0, 0]\n",
@@ -256,10 +256,10 @@ int main(int argc, char ** argv) {
                 Maty[2][0],Maty[2][1],Maty[2][2]);
     }
     
-    if (fabs(Matz[0][1]+1.)>1.e-13 ||fabs(Matz[1][0]-1.)>1.e-13||fabs(Matz[2][2]-1.)>1.e-13
-        ||fabs(Matz[0][0])>1.e-13 ||fabs(Matz[0][2])>1.e-13
-        ||fabs(Matz[1][1])>1.e-13 ||fabs(Matz[1][2])>1.e-13
-        ||fabs(Matz[2][0])>1.e-13 ||fabs(Matz[2][1])>1.e-13) {
+    if (fabs(Matz[0][1]+1.)>DBL_EPSILON ||fabs(Matz[1][0]-1.)>DBL_EPSILON||fabs(Matz[2][2]-1.)>DBL_EPSILON
+        ||fabs(Matz[0][0])>DBL_EPSILON ||fabs(Matz[0][2])>DBL_EPSILON
+        ||fabs(Matz[1][1])>DBL_EPSILON ||fabs(Matz[1][2])>DBL_EPSILON
+        ||fabs(Matz[2][0])>DBL_EPSILON ||fabs(Matz[2][1])>DBL_EPSILON) {
         errorcount++;
         fprintf(stderr," CQRQuaternion2Matrix Matz wrong value \n  [ %g, %g, %g]\n  [ %g, %g, %g]\n  [ %g, %g, %g ]\n"
                 "!=  [0, -1, 0]\n    [1, 0, 0]\n    [0, 0, 1]\n",
@@ -284,20 +284,20 @@ int main(int argc, char ** argv) {
         fprintf(stderr," CQRAngles2Quaternion failed\n");
     }
     
-    if (CQRDivide(&q4,&qx,q1) || CQRNormsq(&normsq,&q4) || fabs(normsq-1.) > 1.e-13 || fabs(q4.w*q4.w-1.) > 1.e-13) {
+    if (CQRDivide(&q4,&qx,q1) || CQRNormsq(&normsq,&q4) || fabs(normsq-1.) > 10.*DBL_EPSILON || fabs(q4.w*q4.w-1.) > 10.*DBL_EPSILON) {
         errorcount++;
         fprintf(stderr,"  CQRAngles2Quaternion q1 wrong value [%g, %g, %g, %g] != +/-[%g, %g, %g, %g]\n",
                 qx.w, qx.x, qx.y, qx.z, q1->w, q1->x, q1->y, q1->z );  
     }
     
-    if (CQRDivide(&q4,&qy,q2) || CQRNormsq(&normsq,&q4) || fabs(normsq-1.) > 1.e-13 || fabs(q4.w*q4.w-1.) > 1.e-13) {
+    if (CQRDivide(&q4,&qy,q2) || CQRNormsq(&normsq,&q4) || fabs(normsq-1.) > 10.*DBL_EPSILON || fabs(q4.w*q4.w-1.) > 10.*DBL_EPSILON) {
         errorcount++;
         fprintf(stderr,"  CQRAngles2Quaternion q2 wrong value [%g, %g, %g, %g] != +/-[%g, %g, %g, %g]\n",
                 qy.w, qy.x, qy.y, qy.z, q2->w, q2->x, q2->y, q2->z );  
     }
     
     
-    if (CQRDivide(&q4,&qz,q3) || CQRNormsq(&normsq,&q4) || fabs(normsq-1.) > 1.e-13 || fabs(q4.w*q4.w-1.) > 1.e-13) {
+    if (CQRDivide(&q4,&qz,q3) || CQRNormsq(&normsq,&q4) || fabs(normsq-1.) > 10.*DBL_EPSILON || fabs(q4.w*q4.w-1.) > 10.*DBL_EPSILON) {
         errorcount++;
         fprintf(stderr,"  CQRAngles2Quaternion q3 wrong value [%g, %g, %g, %g] != +/-[%g, %g, %g, %g]\n",
                 qz.w, qz.x, qz.y, qz.z, q3->w, q3->x, q3->y, q3->z );  
@@ -443,7 +443,7 @@ int main(int argc, char ** argv) {
     }
     
     {
-        CQRQuaternion q1, q2, q3, qout1, qout2, qout3, qtest1, qtest2, qtest3, qtemp;
+        CQRQuaternion q1, q2, q3, qout1, qout2, qout3, qtest1, qtest2, qtest3;
         double norm1, norm2, norm3;
         double normq1, normq2, normq3;
         
@@ -462,12 +462,12 @@ int main(int argc, char ** argv) {
                 CQRMNorm(normq1,q1);
                 CQRMNorm(normq2,q2);
                 CQRMNorm(normq3,q3);
-                CQRMSubtract(qtemp,q1,qtest1);  CQRMNorm(norm1,qtemp);
-                CQRMSubtract(qtemp,q2,qtest2);  CQRMNorm(norm2,qtemp);
-                CQRMSubtract(qtemp,q3,qtest3);  CQRMNorm(norm3,qtemp);
-                if (norm1 > 40.*DBL_EPSILON*normq1
-                    || norm2 > 40.*DBL_EPSILON*normq2
-                    || norm3 > 40.*DBL_EPSILON*normq3) {
+                CQRMDist(norm1,q1,qtest1);
+                CQRMDist(norm2,q2,qtest2);
+                CQRMDist(norm3,q3,qtest3);
+                if (norm1 > 100.*DBL_EPSILON*normq1
+                    || norm2 > 100.*DBL_EPSILON*normq2
+                    || norm3 > 100.*DBL_EPSILON*normq3) {
                     errorcount++;
                     fprintf(stdout," %d'th root of [%g,%g,%g,%g] = [%g,%g,%g,%g], power = [%g,%g,%g,%g], delta %g\n",
                             i, q1.w, q1.x, q1.y, q1.z,

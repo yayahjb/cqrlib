@@ -502,6 +502,21 @@ inline DistanceType Norm ( void ) const
     return sqrt( w*w + x*x + y*y + z*z );
 }
 
+
+/* Distsq -- Form the distance squared from a quaternion */
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+inline DistanceType Distsq ( const CPPQR& q ) const
+{
+    return( (w-q.w)*(w-q.w) + (x-q.x)*(x-q.x) + (y-q.y)*(y-q.y) + (z-q.z)*(z-q.z) );
+}
+
+/* Dist -- Form the distance from a quaternion */
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+inline DistanceType Dist ( const CPPQR& q ) const
+{
+    return sqrt( (w-q.w)*(w-q.w) + (x-q.x)*(x-q.x) + (y-q.y)*(y-q.y) + (z-q.z)*(z-q.z)  );
+}
+
 /* Inverse -- Form the inverse of a quaternion */
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 inline CPPQR Inverse ( void ) const
@@ -1258,16 +1273,16 @@ extern "C" {
 (q).w = (qw); (q).x = (qx); (q).y = (qy); (q).z = (qz);
 
 #define CQRMAdd(sum,q1,q2) \
-(sum).w = (q1).w + (q2).w; sum.x = (q1).x + (q2).x; sum.y = (q1).y + (q2).y; sum.z = (q1).z + (q2).z;
+(sum).w = (q1).w + (q2).w; (sum).x = (q1).x + (q2).x; (sum).y = (q1).y + (q2).y; (sum).z = (q1).z + (q2).z;
 
 #define CQRMSubtract(sum,q1,q2) \
-(sum).w = (q1).w - (q2).w; sum.x = (q1).x - (q2).x; sum.y = (q1).y - (q2).y; sum.z = (q1).z - (q2).z;
+(sum).w = (q1).w - (q2).w; (sum).x = (q1).x - (q2).x; (sum).y = (q1).y - (q2).y; (sum).z = (q1).z - (q2).z;
 
 #define CQRMMultiply(product,q1,q2 ) \
 (product).w = -(q1).z*(q2).z - (q1).y*(q2).y - (q1).x*(q2).x + (q1).w*(q2).w; \
 (product).x =  (q1).y*(q2).z - (q1).z*(q2).y + (q1).w*(q2).x + (q1).x*(q2).w; \
 (product).y = -(q1).x*(q2).z + (q1).w*(q2).y + (q1).z*(q2).x + (q1).y*(q2).w; \
-(product).z =  (q1).w*(q2).z + (q1).x*(q2).y - (q1).y*(q2).x + (q1).z*(q2).w;
+(product).z =  (q1).w*(q2).z + (q1).x*(q2).y - (q1).y*(q2).x + (q1).z*(q2).w;        
 
 #define CQRMDot(dotprod,q1,q2 ) \
 dotprod = (q1).w*(q2).w + (q1).x*(q2).x + (q1).y*(q2).y + (q1).z*(q2).z; 
@@ -1290,6 +1305,12 @@ normsq = (q).w*(q).w + (q).x*(q).x + (q).y*(q).y + (q).z*(q).z;
 #define CQRMNorm(norm,q) \
 norm = sqrt((q).w*(q).w + (q).x*(q).x + (q).y*(q).y + (q).z*(q).z);
 
+#define CQRMDistsq(distsq,q1,q2) \
+distsq = ((q1).w-(q2).w)*((q1).w-(q2).w) + ((q1).x-(q2).x)*((q1).x-(q2).x) + ((q1).y-(q2).y)*((q1).y-(q2).y) +  ((q1).z-(q2).z)*((q1).z-(q2).z);
+    
+#define CQRMDist(dist,q1,q2) \
+dist = sqrt(((q1).w-(q2).w)*((q1).w-(q2).w) + ((q1).x-(q2).x)*((q1).x-(q2).x) + ((q1).y-(q2).y)*((q1).y-(q2).y) +  ((q1).z-(q2).z)*((q1).z-(q2).z));
+    
 #define CQRMInverse(inverseq,q) \
 { double normsq; \
 CQRMConjugate(inverseq,q); \
@@ -1412,6 +1433,14 @@ CQRMScalarMultiply(inverseq,inverseq,1./normsq); \
     /*  CQRNorm -- Form the norm of a quaternion */
     
     int CQRNorm (double CQR_FAR * norm, CQRQuaternionHandle quaternion ) ;
+    
+    /*  CQRDistsq -- Form the distance squared between two quaternions */
+    
+    int CQRDistsq (double CQR_FAR * distsq, CQRQuaternionHandle q1, CQRQuaternionHandle q2) ;
+    
+    /*  CQRDist -- Form the distance between two quaternions */
+    
+    int CQRDist (double CQR_FAR * dist, CQRQuaternionHandle q1, CQRQuaternionHandle q2 ) ;
     
     /*  CQRInverse -- Form the inverse of a quaternion */
     

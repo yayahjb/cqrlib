@@ -425,10 +425,7 @@ extern "C" {
         
         if (!quaternion || !q1 || !q2 ) return CQR_BAD_ARGUMENT;
         
-        quaternion->w = q1->w + q2->w;
-        quaternion->x = q1->x + q2->x;
-        quaternion->y = q1->y + q2->y;
-        quaternion->z = q1->z + q2->z;
+        CQRMAdd(*quaternion,*q1,*q2);
         
         return CQR_SUCCESS;
         
@@ -440,10 +437,7 @@ extern "C" {
         
         if (!quaternion || !q1 || !q2 ) return CQR_BAD_ARGUMENT;
         
-        quaternion->w = q1->w - q2->w;
-        quaternion->x = q1->x - q2->x;
-        quaternion->y = q1->y - q2->y;
-        quaternion->z = q1->z - q2->z;
+        CQRMSubtract(*quaternion,*q1,*q2);
         
         return CQR_SUCCESS;
         
@@ -455,11 +449,8 @@ extern "C" {
         
         if (!quaternion || !q1 || !q2 ) return CQR_BAD_ARGUMENT;
         
-        quaternion->w = -q1->z*q2->z - q1->y*q2->y - q1->x*q2->x + q1->w*q2->w;
-        quaternion->x =  q1->y*q2->z - q1->z*q2->y + q1->w*q2->x + q1->x*q2->w;
-        quaternion->y = -q1->x*q2->z + q1->w*q2->y + q1->z*q2->x + q1->y*q2->w;
-        quaternion->z =  q1->w*q2->z + q1->x*q2->y - q1->y*q2->x + q1->z*q2->w;
-        
+        CQRMMultiply(*quaternion,*q1,*q2);
+                
         return CQR_SUCCESS;
         
     }
@@ -509,10 +500,7 @@ extern "C" {
         
         if (!quaternion || !q ) return CQR_BAD_ARGUMENT;
         
-        quaternion->w = q->w *s;
-        quaternion->x = q->x *s;
-        quaternion->y = q->y *s;
-        quaternion->z = q->z *s;
+        CQRMScalarMultiply(*quaternion,*q,s);
         
         return CQR_SUCCESS;
         
@@ -535,11 +523,8 @@ extern "C" {
         
         if (!quaternion || !qconjugate ) return CQR_BAD_ARGUMENT;
         
-        qconjugate->w = quaternion->w;
-        qconjugate->x = -quaternion->x;
-        qconjugate->y = -quaternion->y;
-        qconjugate->z = -quaternion->z;
-        
+        CQRMConjugate(*qconjugate,*quaternion);
+                
         return CQR_SUCCESS;
         
     }
@@ -550,7 +535,7 @@ extern "C" {
         
         if (!quaternion || !normsq ) return CQR_BAD_ARGUMENT;
         
-        *normsq = quaternion->w*quaternion->w + quaternion->x*quaternion->x + quaternion->y*quaternion->y + quaternion->z*quaternion->z;
+        CQRMNormsq(*normsq,*quaternion);
         
         return CQR_SUCCESS;
         
@@ -562,7 +547,31 @@ extern "C" {
         
         if (!quaternion || !norm ) return CQR_BAD_ARGUMENT;
         
-        *norm = sqrt(quaternion->w*quaternion->w + quaternion->x*quaternion->x + quaternion->y*quaternion->y + quaternion->z*quaternion->z);
+        CQRMNorm(*norm,*quaternion);
+                
+        return CQR_SUCCESS;
+        
+    }
+
+    /*  CQRDistsq -- Form the distance squared between two quaternions */
+    
+    int CQRDistsq (double CQR_FAR * distsq, CQRQuaternionHandle q1,  CQRQuaternionHandle q2 ) {
+        
+        if (!q1 || !q2 || !distsq ) return CQR_BAD_ARGUMENT;
+        
+        CQRMDistsq(*distsq,*q1,*q2);
+        
+        return CQR_SUCCESS;
+        
+    }
+    
+    /*  CQRDist -- Form the distance between two quaternions */
+    
+    int CQRDist (double CQR_FAR * dist, CQRQuaternionHandle q1,  CQRQuaternionHandle q2) {
+        
+        if (!q1 || !q2 || !dist ) return CQR_BAD_ARGUMENT;
+        
+        CQRMDist(*dist,*q1,*q2);
         
         return CQR_SUCCESS;
         
