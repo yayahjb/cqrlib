@@ -1,12 +1,13 @@
 
                  CQRlib -- ANSI C API for Quaternion Rotations
 
-                                 Release 1.1.1
-                               18 September 2010
+                                 Release 1.1.2
+                                21 December 2010
                    (c) 2008, 2009, 2010 Herbert J. Bernstein
                       yaya at bernstein-plus-sons dot com
                 You may distribute the CQRlib API under the LGPL
 
+   The 1.1.2 release improved the portability of the code for Visual Studio.
    The 1.1.1 release relaxed some of the test constraints and parametrized
    the tests against DBL_EPSILON and added the Dist and Distsq functions. The
    1.1 release added functions for log, exp, power and root, added a macro
@@ -118,7 +119,9 @@
    LIBTOOL = $(HOME)/bin/libtool
 
    If you need to include local header files using #include "..." instead of
-   #include <...>, define the variable USE_LOCAL_HEADERS
+   #include <...>, define the variable USE_LOCAL_HEADERS. This definition is
+   forced if _MSC_VER is defined, meaning that local headers will
+   automatically be used for Visual Studio.
 
     Synopsis
 
@@ -573,5 +576,5 @@
 
      ----------------------------------------------------------------------
 
-   Updated 18 September 2010
+   Updated 21 December 2010
    yaya at bernstein-plus-sons dot com

@@ -62,8 +62,15 @@ author(s) and do not necessarily reflect the views of the funding agencies.
 extern "C" {
     
 #endif
-    
+ 
+#ifdef _MSC_VER
+#define USE_LOCAL_HEADERS
+#endif
+#ifndef USE_LOCAL_HEADERS
 #include <cqrlib.h>
+#else
+#include "cqrlib.h"
+#endif
     
     /* CQRCreateQuaternion -- create a quaternion = w +ix+jy+kz */
     
@@ -237,7 +244,7 @@ extern "C" {
         radius = sqrt( (q->w)*(q->w) + (q->x)*(q->x) + (q->y)*(q->y) + (q->z)*(q->z) );
         anorm = sqrt( (q->x)*(q->x) + (q->y)*(q->y) + (q->z)*(q->z) );
         if ( anorm <= DBL_MIN) {
-            return 0.;
+            return CQR_SUCCESS;
         }
         cosangle = (q->w)/radius;
         sinangle = anorm/radius;
@@ -358,7 +365,7 @@ extern "C" {
             CQRMInverse(qtemp,*q);
             ptemp = -p;
         }
-        while(1) {
+        while(ptemp) {
             if ((ptemp&1)!= 0) {
                 CQRMMultiply(qprod,*quaternion,qtemp);
                 CQRMCopy(*quaternion,qprod);
@@ -1225,3 +1232,4 @@ extern "C" {
 }
 
 #endif
+
