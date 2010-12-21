@@ -8,8 +8,8 @@
 <h3 align="center">CQRlib -- ANSI C API for Quaternion Rotations</h3>
 <P>
 <center>
-Release 1.1.1<br />
-18 September 2010<br />
+Release 1.1.2<br />
+21 December 2010<br />
 &#169; 2008, 2009, 2010 Herbert J. Bernstein<br/>
 <script language="javascript" type="text/javascript">
 <!-- 
@@ -25,6 +25,7 @@ yaya <b>at</b> bernstein-plus-sons <b>dot</b> com
 You may distribute the CQRlib API under the <a href=lgpl.txt style="text-decoration:none">LGPL</a><br />
 </center>
 <P>
+The 1.1.2 release improved the portability of the code for Visual Studio.
 The 1.1.1 release relaxed some of the test constraints and parametrized the tests against DBL_EPSILON
 and added the Dist and Distsq functions.
 The 1.1 release added functions for log, exp, power and root, added a macro form of the
@@ -141,7 +142,8 @@ of in the Makefie
 LIBTOOL = $(HOME)/bin/libtool
 <p>
 If you need to include local header files using #include &quot;...&quot; instead of #include &lt;...&gt;,
-define the variable USE_LOCAL_HEADERS
+define the variable USE_LOCAL_HEADERS.  This definition is forced if _MSC_VER is defined, meaning that
+local headers will automatically be used for Visual Studio.
 
 
 <h4>Synopsis</h4>
@@ -603,7 +605,7 @@ For examples of the use of the CPPQR template, see the C++ test program <a href=
 
 <hr>
 <font size="2">
-Updated 18 September 2010<br />
+Updated 21 December 2010<br />
 <script language="javascript" type="text/javascript">
 <!-- 
       var name = "yaya";
