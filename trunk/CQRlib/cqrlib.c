@@ -291,7 +291,7 @@ extern "C" {
                             
     int CQRExp( CQRQuaternionHandle quaternion, CQRQuaternionHandle q ) {
                             
-        CQRQuaternion impart;
+        CQRQuaternion impart = {0,0,0,0};
         double angle;
         double rat;
                             
