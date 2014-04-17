@@ -1,26 +1,28 @@
 
-                 CQRlib -- ANSI C API for Quaternion Rotations
+                    CQRlib -- ANSI C API for Quaternion Rotations
 
-                                 Release 1.1.2
-                                21 December 2010
-                   (c) 2008, 2009, 2010 Herbert J. Bernstein
-                      yaya at bernstein-plus-sons dot com
+                                 Release 1.1.3
+                                 17 April 2014
+                (c) 2008, 2009, 2010, 2014 Herbert J. Bernstein
+                            yayahjb at gmail dot com
                 You may distribute the CQRlib API under the LGPL
 
-   The 1.1.2 release improved the portability of the code for Visual Studio.
-   The 1.1.1 release relaxed some of the test constraints and parametrized
-   the tests against DBL_EPSILON and added the Dist and Distsq functions. The
-   1.1 release added functions for log, exp, power and root, added a macro
-   form of the norm and fixed the macro for inverse. The 1.0.6 release fixed
-   an error in the CQRHLERPDist definition and comments. The 1.0.5 release
-   added SLERP/HLERP support in C++ and C, moved from the vector project. The
-   1.0.4 release added a version of L. Andrews adaptation to a C++ template.
-   The 1.0.3 release changed from use of a FAR macro to use of a CQR_FAR
-   macro to avoid name conflicts. the macros for malloc, free, memmove and
-   memset were also changed. The 1.0.2 release of 14 June 2009 corrected the
-   Makefile for case-sensitive file systems and to include -lm in loading.
-   Release 1.0.1 of 23 February 2009 was a minor documentation update to the
-   original 1.0 release of 22 February 2009.
+   The 1.1.3 release parenthesized uses of *this that caused errors from OSX
+   clang. Thanks to Zack Settel for reporting the problem. The 1.1.2 release
+   improved the portability of the code for Visual Studio. The 1.1.1 release
+   relaxed some of the test constraints and parametrized the tests against
+   DBL_EPSILON and added the Dist and Distsq functions. The 1.1 release added
+   functions for log, exp, power and root, added a macro form of the norm and
+   fixed the macro for inverse. The 1.0.6 release fixed an error in the
+   CQRHLERPDist definition and comments. The 1.0.5 release added SLERP/HLERP
+   support in C++ and C, moved from the vector project. The 1.0.4 release
+   added a version of L. Andrews adaptation to a C++ template. The 1.0.3
+   release changed from use of a FAR macro to use of a CQR_FAR macro to avoid
+   name conflicts. the macros for malloc, free, memmove and memset were also
+   changed. The 1.0.2 release of 14 June 2009 corrected the Makefile for
+   case-sensitive file systems and to include -lm in loading. Release 1.0.1
+   of 23 February 2009 was a minor documentation update to the original 1.0
+   release of 22 February 2009.
 
    CQRlib is an ANSI C implementation of a utility library for quaternion
    arithmetic and quaternion rotation math. See
@@ -42,11 +44,11 @@
 
    The CQRlib package is available at www.sourceforge.net/projects/cqrlib. A
    source tarball is available at
-   downloads.sourceforge.net/cqrlib/CQRlib-1.1.1.tar.gz. Later tarballs may
+   downloads.sourceforge.net/cqrlib/CQRlib-1.1.3.tar.gz. Later tarballs may
    be available.
 
    When the source tarball is downloaded and unpacked, you should have a
-   directory CQRlib-1.1.1 To see the current settings for a build execute
+   directory CQRlib-1.1.3 To see the current settings for a build execute
 
    make
 
@@ -576,5 +578,5 @@
 
      ----------------------------------------------------------------------
 
-   Updated 21 December 2010
-   yaya at bernstein-plus-sons dot com
+   Updated 17 April 2014
+   yayahjb at gmail dot com
