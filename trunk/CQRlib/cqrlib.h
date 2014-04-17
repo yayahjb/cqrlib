@@ -313,7 +313,7 @@ inline CPPQR& operator+= ( const CPPQR& q )
     x += q.x;
     y += q.y;
     z += q.z;
-    return *this;
+    return (*this);
 }
 
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
@@ -323,7 +323,7 @@ inline CPPQR& operator-= ( const CPPQR& q )
     x -= q.x;
     y -= q.y;
     z -= q.z;
-    return *this;
+    return (*this);
 }
 
 /* Subtract -- subtract a quaternion (q2) from a quaternion (q1)  */  
@@ -375,7 +375,7 @@ inline CPPQR& operator*= ( const CPPQR& q )
     x = temp.x;
     y = temp.y;
     z = temp.z;
-    return *this;
+    return (*this);
 }
 
 /* Divide -- Divide a quaternion (q1) by quaternion (q2)  */
@@ -419,7 +419,7 @@ inline CPPQR& operator/= ( const CPPQR& q2 )
     y = q.y/norm2sq;
     z = q.z/norm2sq;
     
-    return *this;
+    return (*this);
 }
 
 
@@ -442,7 +442,7 @@ inline CPPQR& operator*= ( const DistanceType& d )
     x *= d;
     y *= d;
     z *= d;
-    return *this;
+    return (*this);
 }
 
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
@@ -461,7 +461,7 @@ inline CPPQR& operator/= ( const DistanceType& d )
         y /= d;
         z /= d;
     }
-    return *this;
+    return (*this);
 }
 
 
@@ -573,7 +573,7 @@ inline void RotateByQuaternion(VectorType &w, const VectorType v )
 {
     CPPQR vquat( 0.0, v[0], v[1], v[2] );
     const CPPQR wquat = (*this)*vquat;
-    const CPPQR qconj = *this.Conjugate( );
+    const CPPQR qconj = (*this).Conjugate( );
     vquat = wquat * qconj;
     w[0] = vquat.x; w[1] = vquat.y; w[2] = vquat.z;
     return;
@@ -583,7 +583,7 @@ inline VectorType& RotateByQuaternion(const VectorType v )
 {
     CPPQR vquat( 0.0, v[0], v[1], v[2] );
     const CPPQR wquat = (*this)*vquat;
-    const CPPQR qconj = *this.Conjugate( );
+    const CPPQR qconj = (*this).Conjugate( );
     vquat = wquat * qconj;
     return VectorType(vquat.x, vquat.y, vquat.z);
 }
