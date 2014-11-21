@@ -208,7 +208,7 @@ int main ( )
     
     q4 = qz / q3;
     normsq = q4.Normsq( );
-    if (abs(normsq-1.) > 10.*DBL_EPSILON || fabs(q4.GetW()*q4.GetW()-1.) > 10.*DBL_EPSILON) {
+    if (fabs(normsq-1.) > 10.*DBL_EPSILON || fabs(q4.GetW()*q4.GetW()-1.) > 10.*DBL_EPSILON) {
         fprintf(stdout," Angles2Quaternion q3 wrong value [%g, %g, %g, %g] != +/-[%g, %g, %g, %g]\n",
                 qz.GetW(), qz.GetX(), qz.GetY(), qz.GetZ(), q3.GetW(), q3.GetX(), q3.GetY(), q3.GetZ() );  
     }
