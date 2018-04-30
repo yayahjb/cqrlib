@@ -1,28 +1,33 @@
+   Get CQRlib at SourceForge.net. Fast, secure and Free Open Source software
+   downloads
 
-                    CQRlib -- ANSI C API for Quaternion Rotations
+     ----------------------------------------------------------------------
 
-                                 Release 1.1.3
-                                 17 April 2014
-                (c) 2008, 2009, 2010, 2014 Herbert J. Bernstein
+                 CQRlib -- ANSI C API for Quaternion Rotations
+
+                                 Release 1.1.4
+                                  29 Apr 2018
+              © 2008, 2009, 2010, 2014, 2018 Herbert J. Bernstein
                             yayahjb at gmail dot com
                 You may distribute the CQRlib API under the LGPL
 
-   The 1.1.3 release parenthesized uses of *this that caused errors from OSX
-   clang. Thanks to Zack Settel for reporting the problem. The 1.1.2 release
-   improved the portability of the code for Visual Studio. The 1.1.1 release
-   relaxed some of the test constraints and parametrized the tests against
-   DBL_EPSILON and added the Dist and Distsq functions. The 1.1 release added
-   functions for log, exp, power and root, added a macro form of the norm and
-   fixed the macro for inverse. The 1.0.6 release fixed an error in the
-   CQRHLERPDist definition and comments. The 1.0.5 release added SLERP/HLERP
-   support in C++ and C, moved from the vector project. The 1.0.4 release
-   added a version of L. Andrews adaptation to a C++ template. The 1.0.3
-   release changed from use of a FAR macro to use of a CQR_FAR macro to avoid
-   name conflicts. the macros for malloc, free, memmove and memset were also
-   changed. The 1.0.2 release of 14 June 2009 corrected the Makefile for
-   case-sensitive file systems and to include -lm in loading. Release 1.0.1
-   of 23 February 2009 was a minor documentation update to the original 1.0
-   release of 22 February 2009.
+   The 1.1.4 release is a documentation change to reflect a move of the
+   source to github. The 1.1.3 release parenthesized uses of *this that
+   caused errors from OSX clang. Thanks to Zack Settel for reporting the
+   problem. The 1.1.2 release improved the portability of the code for Visual
+   Studio. The 1.1.1 release relaxed some of the test constraints and
+   parametrized the tests against DBL_EPSILON and added the Dist and Distsq
+   functions. The 1.1 release added functions for log, exp, power and root,
+   added a macro form of the norm and fixed the macro for inverse. The 1.0.6
+   release fixed an error in the CQRHLERPDist definition and comments. The
+   1.0.5 release added SLERP/HLERP support in C++ and C, moved from the
+   vector project. The 1.0.4 release added a version of L. Andrews adaptation
+   to a C++ template. The 1.0.3 release changed from use of a FAR macro to
+   use of a CQR_FAR macro to avoid name conflicts. the macros for malloc,
+   free, memmove and memset were also changed. The 1.0.2 release of 14 June
+   2009 corrected the Makefile for case-sensitive file systems and to include
+   -lm in loading. Release 1.0.1 of 23 February 2009 was a minor
+   documentation update to the original 1.0 release of 22 February 2009.
 
    CQRlib is an ANSI C implementation of a utility library for quaternion
    arithmetic and quaternion rotation math. See
@@ -42,13 +47,13 @@
 
     Installation
 
-   The CQRlib package is available at www.sourceforge.net/projects/cqrlib. A
-   source tarball is available at
-   downloads.sourceforge.net/cqrlib/CQRlib-1.1.3.tar.gz. Later tarballs may
-   be available.
+   The CQRlib package is available at https://github.com/yayahjb/cqrlib.git.
+   A source zip file is available at
+   https://github.com/yayahjb/cqrlib/archive/master.zip
 
-   When the source tarball is downloaded and unpacked, you should have a
-   directory CQRlib-1.1.3 To see the current settings for a build execute
+   When the source is downloaded and unpacked, you should have a directory
+   cqrlib or master. To build you may need to install the libtool-bin
+   package. To see the current settings for a build execute
 
    make
 
@@ -61,33 +66,33 @@
  
   The current C and C++ compile commands are:
  
-    /Users/yaya/bin/libtool --mode=compile gcc -g -O2  -Wall -ansi -pedantic -I.  -c
-    /Users/yaya/bin/libtool --mode=compile g++ -g -O2  -Wall -ansi -pedantic -DCQR_NOCCODE=1 -I.  -c
+    libtool --mode=compile gcc -g -O2  -Wall -ansi -pedantic -I.  -c
+    libtool --mode=compile g++ -g -O2  -Wall -ansi -pedantic -DCQR_NOCCODE=1 -I.  -c
  
   The current library C and C++ link commands are:
  
-    /Users/yaya/bin/libtool --mode=link gcc -version-info 3:0:1 -rpath /Users/yaya/lib
-    /Users/yaya/bin/libtool --mode=link g++ -version-info 3:0:1 -rpath /Users/yaya/lib
+    libtool --mode=link  gcc -version-info 3:0:1 -rpath /home/yaya/lib
+    libtool --mode=link g++ -version-info 3:0:1 -rpath /home/yaya/lib
  
   The current C library local, dynamic and static build commands are:
  
-    /Users/yaya/bin/libtool --mode=link gcc -g -O2  -Wall -ansi -pedantic -I.
-    /Users/yaya/bin/libtool --mode=link gcc -g -O2  -Wall -ansi -pedantic -dynamic -I /Users/yaya/include -L/Users/yaya/lib
-    /Users/yaya/bin/libtool --mode=link gcc -g -O2  -Wall -ansi -pedantic -static -I /Users/yaya/include -L/Users/yaya/lib
+    libtool --mode=link gcc -g -O2  -Wall -ansi -pedantic -I.
+    libtool --mode=link gcc -g -O2  -Wall -ansi -pedantic -dynamic -I /home/yaya/include -L/home/yaya/lib
+    libtool --mode=link gcc -g -O2  -Wall -ansi -pedantic -static -I /home/yaya/include -L/home/yaya/lib
  
   The current C++ template local, dynamic and static build commands are:
  
-    /Users/yaya/bin/libtool --mode=link g++ -g -O2  -Wall -ansi -pedantic -DCQR_NOCCODE=1 -I.
-    /Users/yaya/bin/libtool --mode=link g++ -g -O2  -Wall -ansi -pedantic -DCQR_NOCCODE=1 -dynamic -I /Users/yaya/include -L/Users/yaya/lib
-    /Users/yaya/bin/libtool --mode=link g++ -g -O2  -Wall -ansi -pedantic -DCQR_NOCCODE=1 -static -I /Users/yaya/include -L/Users/yaya/lib
+    libtool --mode=link g++ -g -O2  -Wall -ansi -pedantic -DCQR_NOCCODE=1 -I.
+    libtool --mode=link g++ -g -O2  -Wall -ansi -pedantic -DCQR_NOCCODE=1 -dynamic -I /home/yaya/include -L/home/yaya/lib
+    libtool --mode=link g++ -g -O2  -Wall -ansi -pedantic -DCQR_NOCCODE=1 -static -I /home/yaya/include -L/home/yaya/lib
  
   Before installing the CQRlib library and example programs, check
   that the install directory and install commands are correct:
  
   The current values are :
  
-    /usr/local
-    /usr/local/bin/libtool --mode=install cp
+    /home/yaya
+    libtool --mode=install cp
     
  
   To compile the CQRlib library and example programs type:
@@ -110,9 +115,9 @@
    If these settings need to be changed, edit Makefile. On some systems, e.g.
    Mac OS X, the default libtool is not appropriate. In that case you should
    install a recent version of libtool. The CQRlib kit has been tested with
-   libtool versions 1.3.5 and 1.5.4. If the system libtool is not to be used,
-   define the variable LIBTOOL to be the path to the libtool executable, e.g.
-   in bash
+   libtool versions 1.3.5, 1.5.4 and 2.4.6. If the system libtool is not to
+   be used, define the variable LIBTOOL to be the path to the libtool
+   executable, e.g. in bash
 
    export LIBTOOL=$HOME/bin/libtool
 
@@ -578,5 +583,5 @@
 
      ----------------------------------------------------------------------
 
-   Updated 17 April 2014
+   Updated 29 April 2018
    yayahjb at gmail dot com
