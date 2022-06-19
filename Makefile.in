@@ -203,7 +203,6 @@ install:  all $(LIB)/libCQRlib.$(LIB_EXT) $(INC)/cqrlib.h
 		  @mkdir -p $(DESTDIR)$(LIBDIR)
 		  $(INSTALL_COMMAND) $(LIB)/libCQRlib.$(LIB_EXT) $(DESTDIR)$(LIBDIR)/libCQRlib.$(LIB_EXT)
 		  $(INSTALL_FINISH_COMMAND) $(DESTDIR)$(LIBDIR)/libCQRlib.$(LIB_EXT)
-		  -cp $(DESTDIR)$(INCDIR)/cqrlib.h $(DESTDIR)$(INCDIR)/CQRlib_old.h
 		  cp $(INC)/cqrlib.h $(DESTDIR)$(INCDIR)/cqrlib.h
 		  chmod 644 $(DESTDIR)$(INCDIR)/cqrlib.h
 		  echo "Testing final install dynamic"
