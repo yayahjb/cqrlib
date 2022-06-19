@@ -203,13 +203,13 @@ install:  all $(LIB)/libCQRlib.$(LIB_EXT) $(INC)/cqrlib.h
 		  chmod 644 $(INSTALLDIR)/include/cqrlib.h
 		  echo "Testing final install dynamic"
 		  $(BUILD_COMMAND_DYNAMIC)  $(EXAMPLES)/CQRlibTest.c \
-		  -lCQRlib -lm -o $(BIN)/CQRlibTest_dynamic
+		  $(LIB)/libCQRlib.la -lm -o $(BIN)/CQRlibTest_dynamic
 		  $(BIN)/CQRlibTest_dynamic > $(TESTDATA)/CQRlibTest_dynamic.lst
 		  diff -b -c $(TESTDATA)/CQRlibTest_orig.lst \
 		    $(TESTDATA)/CQRlibTest_dynamic.lst
 		  echo "Testing final install static"
 		  $(BUILD_COMMAND_STATIC) $(EXAMPLES)/CQRlibTest.c \
-		   -lCQRlib -lm -o $(BIN)/CQRlibTest_static
+		   $(LIB)/libCQRlib.la -lm -o $(BIN)/CQRlibTest_static
 		  $(BIN)/CQRlibTest_static > $(TESTDATA)/CQRlibTest_static.lst
 		  diff -b -c $(TESTDATA)/CQRlibTest_orig.lst \
 		    $(TESTDATA)/CQRlibTest_static.lst
