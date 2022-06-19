@@ -40,41 +40,38 @@
 
 # Version string
 VERSION = 3:0:1
-RELEASE = 1.1.0
-
+RELEASE = @PACKAGE_VERSION@
 
 #
 # Compiler and compilation flags
 #
-CC	= gcc
-CXX = g++
+CC = @CC@
+CXX = @CXX@
 CFLAGS  = -g -O2  -Wall -ansi -pedantic
 CPPFLAGS = $(CFLAGS) -DCQR_NOCCODE=1
+
+# Build directory
+top_builddir = @top_builddir@
 
 #
 # libtool path if system default is not suitable
 #
-#LIBTOOL = $(HOME)/bin/libtool
-ifndef LIBTOOL
-  LIBTOOL = libtool
-endif
+LIBTOOL = @LIBTOOL@
 
 #
 # If local headers must be quoted uncomment the next line
 #
 #USE_LOCAL_HEADERS = 1
 
-
 #
 # Directories
 #
-ROOT     = .
-LIB      = $(ROOT)/lib
-BIN      = $(ROOT)/bin
-SRC      = $(ROOT)
-INC      = $(ROOT)
-EXAMPLES = $(ROOT)
-TESTDATA = $(ROOT)
+LIB      = $(top_builddir)/lib
+BIN      = $(top_builddir)/bin
+SRC      = $(top_builddir)
+INC      = $(top_builddir)
+EXAMPLES = $(top_builddir)
+TESTDATA = $(top_builddir)
 #INSTALLDIR = /usr/local
 INSTALLDIR  = $(HOME)
 
