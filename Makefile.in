@@ -49,6 +49,7 @@ CC = @CC@
 CXX = @CXX@
 CFLAGS  = -g -O2  -Wall -ansi -pedantic
 CPPFLAGS = $(CFLAGS) -DCQR_NOCCODE=1
+LDFLAGS = @LDFLAGS@
 
 # Build directory
 top_builddir = @top_builddir@
@@ -89,12 +90,12 @@ INCLUDES = -I$(INC)
 endif
 
 COMPILE_COMMAND         =  $(LIBTOOL) --mode=compile $(CC) $(CFLAGS) $(INCLUDES) $(WARNINGS) -c
-LIBRARY_LINK_COMMAND    =  $(LIBTOOL) --mode=link  $(CC) -version-info $(VERSION) -rpath $(LIBDIR)
+LIBRARY_LINK_COMMAND    =  $(LIBTOOL) --mode=link  $(CC) -version-info $(VERSION) -rpath $(LIBDIR) $(LDFLAGS)
 BUILD_COMMAND_LOCAL     =  $(LIBTOOL) --mode=link $(CC) $(CFLAGS) $(INCLUDES)
 BUILD_COMMAND_DYNAMIC   =  $(LIBTOOL) --mode=link $(CC) $(CFLAGS) -dynamic $(INCLUDES)
 BUILD_COMMAND_STATIC    =  $(LIBTOOL) --mode=link $(CC) $(CFLAGS) -static $(INCLUDES)
 CPPCOMPILE_COMMAND      =  $(LIBTOOL) --mode=compile $(CXX) $(CPPFLAGS) $(INCLUDES) $(WARNINGS) -c
-CPPLIBRARY_LINK_COMMAND =  $(LIBTOOL) --mode=link $(CXX) -version-info $(VERSION) -rpath $(LIBDIR)
+CPPLIBRARY_LINK_COMMAND =  $(LIBTOOL) --mode=link $(CXX) -version-info $(VERSION) -rpath $(LIBDIR) $(LDFLAGS)
 CPPBUILD_COMMAND_LOCAL  =  $(LIBTOOL) --mode=link $(CXX) $(CPPFLAGS) $(INCLUDES)
 CPPBUILD_COMMAND_DYNAMIC=  $(LIBTOOL) --mode=link $(CXX) $(CPPFLAGS) -dynamic $(INCLUDES)
 CPPBUILD_COMMAND_STATIC =  $(LIBTOOL) --mode=link $(CXX) $(CPPFLAGS) -static $(INCLUDES)
