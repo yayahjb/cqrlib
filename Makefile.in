@@ -189,12 +189,13 @@ default:
 #
 # Compile the library and examples
 #
-all:	$(LIB) $(BIN) $(SOURCE) $(HEADERS) \
+all:	$(LIB)/.tag $(BIN)/.tag $(SOURCE) $(HEADERS) \
 		$(LIB)/libCQRlib.$(LIB_EXT) \
 		$(BIN)/CQRlibTest $(BIN)/CPPQRTest
 		
-install:  all $(INSTALLDIR) $(INSTALLDIR)/lib $(INSTALLDIR)/include \
-          $(INC) $(LIB)/libCQRlib.$(LIB_EXT)  $(INC)/cqrlib.h
+install:  all $(LIB)/libCQRlib.$(LIB_EXT) $(INC)/cqrlib.h
+		  @mkdir -p $(INSTALLDIR)/lib
+		  @mkdir -p $(INSTALLDIR)/include
 		  $(INSTALL_COMMAND) $(LIB)/libCQRlib.$(LIB_EXT) $(INSTALLDIR)/lib/libCQRlib.$(LIB_EXT)
 		  $(INSTALL_FINISH_COMMAND) $(INSTALLDIR)/lib/libCQRlib.$(LIB_EXT)
 		  -cp $(INSTALLDIR)/include/cqrlib.h $(INSTALLDIR)/include/CQRlib_old.h
@@ -228,24 +229,13 @@ install:  all $(INSTALLDIR) $(INSTALLDIR)/lib $(INSTALLDIR)/include \
 #
 # Directories
 #
-$(INSTALLDIR):
-	mkdir -p $(INSTALLDIR)
-
-$(INSTALLDIR)/lib:  $(INSTALLDIR)
-	mkdir -p $(INSTALLDIR)/lib
-
-$(INSTALLDIR)/bin:  $(INSTALLDIR)
-	mkdir -p $(INSTALLDIR)/bin
-
-$(INSTALLDIR)/include:  $(INSTALLDIR)
-	mkdir -p $(INSTALLDIR)/include
-	
-
-$(LIB):
+$(LIB)/.tag:
 	mkdir $(LIB)
+	@touch $@
 
-$(BIN):
+$(BIN)/.tag:
 	mkdir $(BIN)
+	@touch $@
 
 #
 # CQRlib library
