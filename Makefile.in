@@ -72,8 +72,12 @@ SRC      = $(top_builddir)
 INC      = $(top_builddir)
 EXAMPLES = $(top_builddir)
 TESTDATA = $(top_builddir)
-#INSTALLDIR = /usr/local
-INSTALLDIR  = $(HOME)
+
+prefix := @prefix@
+exec_prefix := @exec_prefix@
+
+LIBDIR := @libdir@
+INCDIR := @includedir@
 
 #
 # Include directories
@@ -85,15 +89,15 @@ INCLUDES = -I$(INC)
 endif
 
 COMPILE_COMMAND         =  $(LIBTOOL) --mode=compile $(CC) $(CFLAGS) $(INCLUDES) $(WARNINGS) -c
-LIBRARY_LINK_COMMAND    =  $(LIBTOOL) --mode=link  $(CC) -version-info $(VERSION) -rpath $(INSTALLDIR)/lib
+LIBRARY_LINK_COMMAND    =  $(LIBTOOL) --mode=link  $(CC) -version-info $(VERSION) -rpath $(LIBDIR)
 BUILD_COMMAND_LOCAL     =  $(LIBTOOL) --mode=link $(CC) $(CFLAGS) $(INCLUDES)
-BUILD_COMMAND_DYNAMIC   =  $(LIBTOOL) --mode=link $(CC) $(CFLAGS) -dynamic -I $(INSTALLDIR)/include -L$(INSTALLDIR)/lib
-BUILD_COMMAND_STATIC    =  $(LIBTOOL) --mode=link $(CC) $(CFLAGS) -static -I $(INSTALLDIR)/include -L$(INSTALLDIR)/lib
+BUILD_COMMAND_DYNAMIC   =  $(LIBTOOL) --mode=link $(CC) $(CFLAGS) -dynamic $(INCLUDES)
+BUILD_COMMAND_STATIC    =  $(LIBTOOL) --mode=link $(CC) $(CFLAGS) -static $(INCLUDES)
 CPPCOMPILE_COMMAND      =  $(LIBTOOL) --mode=compile $(CXX) $(CPPFLAGS) $(INCLUDES) $(WARNINGS) -c
-CPPLIBRARY_LINK_COMMAND =  $(LIBTOOL) --mode=link $(CXX) -version-info $(VERSION) -rpath $(INSTALLDIR)/lib
+CPPLIBRARY_LINK_COMMAND =  $(LIBTOOL) --mode=link $(CXX) -version-info $(VERSION) -rpath $(LIBDIR)
 CPPBUILD_COMMAND_LOCAL  =  $(LIBTOOL) --mode=link $(CXX) $(CPPFLAGS) $(INCLUDES)
-CPPBUILD_COMMAND_DYNAMIC=  $(LIBTOOL) --mode=link $(CXX) $(CPPFLAGS) -dynamic -I $(INSTALLDIR)/include -L$(INSTALLDIR)/lib
-CPPBUILD_COMMAND_STATIC =  $(LIBTOOL) --mode=link $(CXX) $(CPPFLAGS) -static -I $(INSTALLDIR)/include -L$(INSTALLDIR)/lib
+CPPBUILD_COMMAND_DYNAMIC=  $(LIBTOOL) --mode=link $(CXX) $(CPPFLAGS) -dynamic $(INCLUDES)
+CPPBUILD_COMMAND_STATIC =  $(LIBTOOL) --mode=link $(CXX) $(CPPFLAGS) -static $(INCLUDES)
 INSTALL_COMMAND         =  $(LIBTOOL) --mode=install cp
 INSTALL_FINISH_COMMAND  =  $(LIBTOOL) --mode=finish
 
@@ -162,9 +166,9 @@ default:
 	@echo ' '
 	@echo ' The current values are :'
 	@echo ' '
-	@echo '   $(INSTALLDIR) '	
-	@echo '   $(INSTALL_COMMAND) '	
-	@echo '   $(INSTALL_FINISH) '	
+	@echo '   $(DESTDIR) '
+	@echo '   $(INSTALL_COMMAND) '
+	@echo '   $(INSTALL_FINISH) '
 	@echo ' '
 	@echo ' To compile the CQRlib library and example programs type:'
 	@echo ' '
@@ -194,13 +198,13 @@ all:	$(LIB)/.tag $(BIN)/.tag $(SOURCE) $(HEADERS) \
 		$(BIN)/CQRlibTest $(BIN)/CPPQRTest
 		
 install:  all $(LIB)/libCQRlib.$(LIB_EXT) $(INC)/cqrlib.h
-		  @mkdir -p $(INSTALLDIR)/lib
-		  @mkdir -p $(INSTALLDIR)/include
-		  $(INSTALL_COMMAND) $(LIB)/libCQRlib.$(LIB_EXT) $(INSTALLDIR)/lib/libCQRlib.$(LIB_EXT)
-		  $(INSTALL_FINISH_COMMAND) $(INSTALLDIR)/lib/libCQRlib.$(LIB_EXT)
-		  -cp $(INSTALLDIR)/include/cqrlib.h $(INSTALLDIR)/include/CQRlib_old.h
-		  cp $(INC)/cqrlib.h $(INSTALLDIR)/include/cqrlib.h
-		  chmod 644 $(INSTALLDIR)/include/cqrlib.h
+		  @mkdir -p $(DESTDIR)$(INCDIR)
+		  @mkdir -p $(DESTDIR)$(LIBDIR)
+		  $(INSTALL_COMMAND) $(LIB)/libCQRlib.$(LIB_EXT) $(DESTDIR)$(LIBDIR)/libCQRlib.$(LIB_EXT)
+		  $(INSTALL_FINISH_COMMAND) $(DESTDIR)$(LIBDIR)/libCQRlib.$(LIB_EXT)
+		  -cp $(DESTDIR)$(INCDIR)/cqrlib.h $(DESTDIR)$(INCDIR)/CQRlib_old.h
+		  cp $(INC)/cqrlib.h $(DESTDIR)$(INCDIR)/cqrlib.h
+		  chmod 644 $(DESTDIR)$(INCDIR)/cqrlib.h
 		  echo "Testing final install dynamic"
 		  $(BUILD_COMMAND_DYNAMIC)  $(EXAMPLES)/CQRlibTest.c \
 		  $(LIB)/libCQRlib.la -lm -o $(BIN)/CQRlibTest_dynamic
