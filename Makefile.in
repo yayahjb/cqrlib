@@ -47,8 +47,10 @@ RELEASE = @PACKAGE_VERSION@
 #
 CC = @CC@
 CXX = @CXX@
-CFLAGS  = -g -O2  -Wall -ansi -pedantic
-CPPFLAGS = $(CFLAGS) -DCQR_NOCCODE=1
+CFLAGS  = @CFLAGS@
+CXXFLAGS = @CXXFLAGS@
+CPPFLAGS = @CPPFLAGS@
+WARNINGS = -Wall -ansi -pedantic
 LDFLAGS = @LDFLAGS@
 
 # Build directory
@@ -89,16 +91,19 @@ else
 INCLUDES = -I$(INC)
 endif
 
-COMPILE_COMMAND         =  $(LIBTOOL) --mode=compile $(CC) $(CFLAGS) $(INCLUDES) $(WARNINGS) -c
-LIBRARY_LINK_COMMAND    =  $(LIBTOOL) --mode=link  $(CC) -version-info $(VERSION) -rpath $(LIBDIR) $(LDFLAGS)
-BUILD_COMMAND_LOCAL     =  $(LIBTOOL) --mode=link $(CC) $(CFLAGS) $(INCLUDES)
-BUILD_COMMAND_DYNAMIC   =  $(LIBTOOL) --mode=link $(CC) $(CFLAGS) -dynamic $(INCLUDES)
-BUILD_COMMAND_STATIC    =  $(LIBTOOL) --mode=link $(CC) $(CFLAGS) -static $(INCLUDES)
-CPPCOMPILE_COMMAND      =  $(LIBTOOL) --mode=compile $(CXX) $(CPPFLAGS) $(INCLUDES) $(WARNINGS) -c
+COMPILE_C = $(CC) -std=c90 $(WARNINGS) $(CPPFLAGS) $(CFLAGS)
+COMPILE_CXX = $(CXX) -std=c++98 $(WARNINGS) $(CPPFLAGS) -DCQR_NOCCODE=1 $(CXXFLAGS)
+
+COMPILE_COMMAND         =  $(LIBTOOL) --mode=compile $(COMPILE_C) $(INCLUDES) -c
+LIBRARY_LINK_COMMAND    =  $(LIBTOOL) --mode=link $(CC) -version-info $(VERSION) -rpath $(LIBDIR) $(LDFLAGS)
+BUILD_COMMAND_LOCAL     =  $(LIBTOOL) --mode=link $(COMPILE_C) $(INCLUDES)
+BUILD_COMMAND_DYNAMIC   =  $(LIBTOOL) --mode=link $(COMPILE_C) -dynamic $(INCLUDES)
+BUILD_COMMAND_STATIC    =  $(LIBTOOL) --mode=link $(COMPILE_C) -static $(INCLUDES)
+CPPCOMPILE_COMMAND      =  $(LIBTOOL) --mode=compile $(COMPILE_CXX) $(INCLUDES) -c
 CPPLIBRARY_LINK_COMMAND =  $(LIBTOOL) --mode=link $(CXX) -version-info $(VERSION) -rpath $(LIBDIR) $(LDFLAGS)
-CPPBUILD_COMMAND_LOCAL  =  $(LIBTOOL) --mode=link $(CXX) $(CPPFLAGS) $(INCLUDES)
-CPPBUILD_COMMAND_DYNAMIC=  $(LIBTOOL) --mode=link $(CXX) $(CPPFLAGS) -dynamic $(INCLUDES)
-CPPBUILD_COMMAND_STATIC =  $(LIBTOOL) --mode=link $(CXX) $(CPPFLAGS) -static $(INCLUDES)
+CPPBUILD_COMMAND_LOCAL  =  $(LIBTOOL) --mode=link $(COMPILE_CXX) $(INCLUDES)
+CPPBUILD_COMMAND_DYNAMIC=  $(LIBTOOL) --mode=link $(COMPILE_CXX) -dynamic $(INCLUDES)
+CPPBUILD_COMMAND_STATIC =  $(LIBTOOL) --mode=link $(COMPILE_CXX) -static $(INCLUDES)
 INSTALL_COMMAND         =  $(LIBTOOL) --mode=install cp
 INSTALL_FINISH_COMMAND  =  $(LIBTOOL) --mode=finish
 
