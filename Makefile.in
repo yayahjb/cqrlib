@@ -40,43 +40,47 @@
 
 # Version string
 VERSION = 3:0:1
-RELEASE = 1.1.0
-
+RELEASE = @PACKAGE_VERSION@
 
 #
 # Compiler and compilation flags
 #
-CC	= gcc
-CXX = g++
-CFLAGS  = -g -O2  -Wall -ansi -pedantic
-CPPFLAGS = $(CFLAGS) -DCQR_NOCCODE=1
+CC = @CC@
+CXX = @CXX@
+CFLAGS  = @CFLAGS@
+CXXFLAGS = @CXXFLAGS@
+CPPFLAGS = @CPPFLAGS@
+WARNINGS = -Wall -ansi -pedantic
+LDFLAGS = @LDFLAGS@
+
+# Build directory
+top_builddir = @top_builddir@
 
 #
 # libtool path if system default is not suitable
 #
-#LIBTOOL = $(HOME)/bin/libtool
-ifndef LIBTOOL
-  LIBTOOL = libtool
-endif
+LIBTOOL = @LIBTOOL@
 
 #
 # If local headers must be quoted uncomment the next line
 #
 #USE_LOCAL_HEADERS = 1
 
-
 #
 # Directories
 #
-ROOT     = .
-LIB      = $(ROOT)/lib
-BIN      = $(ROOT)/bin
-SRC      = $(ROOT)
-INC      = $(ROOT)
-EXAMPLES = $(ROOT)
-TESTDATA = $(ROOT)
-#INSTALLDIR = /usr/local
-INSTALLDIR  = $(HOME)
+LIB      = $(top_builddir)/lib
+BIN      = $(top_builddir)/bin
+SRC      = $(top_builddir)
+INC      = $(top_builddir)
+EXAMPLES = $(top_builddir)
+TESTDATA = $(top_builddir)
+
+prefix := @prefix@
+exec_prefix := @exec_prefix@
+
+LIBDIR := @libdir@
+INCDIR := @includedir@
 
 #
 # Include directories
@@ -87,16 +91,19 @@ else
 INCLUDES = -I$(INC)
 endif
 
-COMPILE_COMMAND         =  $(LIBTOOL) --mode=compile $(CC) $(CFLAGS) $(INCLUDES) $(WARNINGS) -c
-LIBRARY_LINK_COMMAND    =  $(LIBTOOL) --mode=link  $(CC) -version-info $(VERSION) -rpath $(INSTALLDIR)/lib
-BUILD_COMMAND_LOCAL     =  $(LIBTOOL) --mode=link $(CC) $(CFLAGS) $(INCLUDES)
-BUILD_COMMAND_DYNAMIC   =  $(LIBTOOL) --mode=link $(CC) $(CFLAGS) -dynamic -I $(INSTALLDIR)/include -L$(INSTALLDIR)/lib
-BUILD_COMMAND_STATIC    =  $(LIBTOOL) --mode=link $(CC) $(CFLAGS) -static -I $(INSTALLDIR)/include -L$(INSTALLDIR)/lib
-CPPCOMPILE_COMMAND      =  $(LIBTOOL) --mode=compile $(CXX) $(CPPFLAGS) $(INCLUDES) $(WARNINGS) -c
-CPPLIBRARY_LINK_COMMAND =  $(LIBTOOL) --mode=link $(CXX) -version-info $(VERSION) -rpath $(INSTALLDIR)/lib
-CPPBUILD_COMMAND_LOCAL  =  $(LIBTOOL) --mode=link $(CXX) $(CPPFLAGS) $(INCLUDES)
-CPPBUILD_COMMAND_DYNAMIC=  $(LIBTOOL) --mode=link $(CXX) $(CPPFLAGS) -dynamic -I $(INSTALLDIR)/include -L$(INSTALLDIR)/lib
-CPPBUILD_COMMAND_STATIC =  $(LIBTOOL) --mode=link $(CXX) $(CPPFLAGS) -static -I $(INSTALLDIR)/include -L$(INSTALLDIR)/lib
+COMPILE_C = $(CC) -std=c90 $(WARNINGS) $(CPPFLAGS) $(CFLAGS)
+COMPILE_CXX = $(CXX) -std=c++98 $(WARNINGS) $(CPPFLAGS) -DCQR_NOCCODE=1 $(CXXFLAGS)
+
+COMPILE_COMMAND         =  $(LIBTOOL) --mode=compile $(COMPILE_C) $(INCLUDES) -c
+LIBRARY_LINK_COMMAND    =  $(LIBTOOL) --mode=link $(CC) -version-info $(VERSION) -rpath $(LIBDIR) $(LDFLAGS)
+BUILD_COMMAND_LOCAL     =  $(LIBTOOL) --mode=link $(COMPILE_C) $(INCLUDES)
+BUILD_COMMAND_DYNAMIC   =  $(LIBTOOL) --mode=link $(COMPILE_C) -shared $(INCLUDES)
+BUILD_COMMAND_STATIC    =  $(LIBTOOL) --mode=link $(COMPILE_C) -static $(INCLUDES)
+CPPCOMPILE_COMMAND      =  $(LIBTOOL) --mode=compile $(COMPILE_CXX) $(INCLUDES) -c
+CPPLIBRARY_LINK_COMMAND =  $(LIBTOOL) --mode=link $(CXX) -version-info $(VERSION) -rpath $(LIBDIR) $(LDFLAGS)
+CPPBUILD_COMMAND_LOCAL  =  $(LIBTOOL) --mode=link $(COMPILE_CXX) $(INCLUDES)
+CPPBUILD_COMMAND_DYNAMIC=  $(LIBTOOL) --mode=link $(COMPILE_CXX) -shared $(INCLUDES)
+CPPBUILD_COMMAND_STATIC =  $(LIBTOOL) --mode=link $(COMPILE_CXX) -static $(INCLUDES)
 INSTALL_COMMAND         =  $(LIBTOOL) --mode=install cp
 INSTALL_FINISH_COMMAND  =  $(LIBTOOL) --mode=finish
 
@@ -165,9 +172,9 @@ default:
 	@echo ' '
 	@echo ' The current values are :'
 	@echo ' '
-	@echo '   $(INSTALLDIR) '	
-	@echo '   $(INSTALL_COMMAND) '	
-	@echo '   $(INSTALL_FINISH) '	
+	@echo '   $(DESTDIR) '
+	@echo '   $(INSTALL_COMMAND) '
+	@echo '   $(INSTALL_FINISH) '
 	@echo ' '
 	@echo ' To compile the CQRlib library and example programs type:'
 	@echo ' '
@@ -192,26 +199,26 @@ default:
 #
 # Compile the library and examples
 #
-all:	$(LIB) $(BIN) $(SOURCE) $(HEADERS) \
+all:	$(LIB)/.tag $(BIN)/.tag $(SOURCE) $(HEADERS) \
 		$(LIB)/libCQRlib.$(LIB_EXT) \
 		$(BIN)/CQRlibTest $(BIN)/CPPQRTest
 		
-install:  all $(INSTALLDIR) $(INSTALLDIR)/lib $(INSTALLDIR)/include \
-          $(INC) $(LIB)/libCQRlib.$(LIB_EXT)  $(INC)/cqrlib.h
-		  $(INSTALL_COMMAND) $(LIB)/libCQRlib.$(LIB_EXT) $(INSTALLDIR)/lib/libCQRlib.$(LIB_EXT)
-		  $(INSTALL_FINISH_COMMAND) $(INSTALLDIR)/lib/libCQRlib.$(LIB_EXT)
-		  -cp $(INSTALLDIR)/include/cqrlib.h $(INSTALLDIR)/include/CQRlib_old.h
-		  cp $(INC)/cqrlib.h $(INSTALLDIR)/include/cqrlib.h
-		  chmod 644 $(INSTALLDIR)/include/cqrlib.h
+install:  all $(LIB)/libCQRlib.$(LIB_EXT) $(INC)/cqrlib.h
+		  @mkdir -p $(DESTDIR)$(INCDIR)
+		  @mkdir -p $(DESTDIR)$(LIBDIR)
+		  $(INSTALL_COMMAND) $(LIB)/libCQRlib.$(LIB_EXT) $(DESTDIR)$(LIBDIR)/libCQRlib.$(LIB_EXT)
+		  $(INSTALL_FINISH_COMMAND) $(DESTDIR)$(LIBDIR)/libCQRlib.$(LIB_EXT)
+		  cp $(INC)/cqrlib.h $(DESTDIR)$(INCDIR)/cqrlib.h
+		  chmod 644 $(DESTDIR)$(INCDIR)/cqrlib.h
 		  echo "Testing final install dynamic"
 		  $(BUILD_COMMAND_DYNAMIC)  $(EXAMPLES)/CQRlibTest.c \
-		  -lCQRlib -lm -o $(BIN)/CQRlibTest_dynamic
+		  $(LIB)/libCQRlib.la -lm -o $(BIN)/CQRlibTest_dynamic
 		  $(BIN)/CQRlibTest_dynamic > $(TESTDATA)/CQRlibTest_dynamic.lst
 		  diff -b -c $(TESTDATA)/CQRlibTest_orig.lst \
 		    $(TESTDATA)/CQRlibTest_dynamic.lst
 		  echo "Testing final install static"
 		  $(BUILD_COMMAND_STATIC) $(EXAMPLES)/CQRlibTest.c \
-		   -lCQRlib -lm -o $(BIN)/CQRlibTest_static
+		   $(LIB)/libCQRlib.la -lm -o $(BIN)/CQRlibTest_static
 		  $(BIN)/CQRlibTest_static > $(TESTDATA)/CQRlibTest_static.lst
 		  diff -b -c $(TESTDATA)/CQRlibTest_orig.lst \
 		    $(TESTDATA)/CQRlibTest_static.lst
@@ -231,24 +238,13 @@ install:  all $(INSTALLDIR) $(INSTALLDIR)/lib $(INSTALLDIR)/include \
 #
 # Directories
 #
-$(INSTALLDIR):
-	mkdir -p $(INSTALLDIR)
-
-$(INSTALLDIR)/lib:  $(INSTALLDIR)
-	mkdir -p $(INSTALLDIR)/lib
-
-$(INSTALLDIR)/bin:  $(INSTALLDIR)
-	mkdir -p $(INSTALLDIR)/bin
-
-$(INSTALLDIR)/include:  $(INSTALLDIR)
-	mkdir -p $(INSTALLDIR)/include
-	
-
-$(LIB):
+$(LIB)/.tag:
 	mkdir $(LIB)
+	@touch $@
 
-$(BIN):
+$(BIN)/.tag:
 	mkdir $(BIN)
+	@touch $@
 
 #
 # CQRlib library
