@@ -97,12 +97,12 @@ COMPILE_CXX = $(CXX) -std=c++98 $(WARNINGS) $(CPPFLAGS) -DCQR_NOCCODE=1 $(CXXFLA
 COMPILE_COMMAND         =  $(LIBTOOL) --mode=compile $(COMPILE_C) $(INCLUDES) -c
 LIBRARY_LINK_COMMAND    =  $(LIBTOOL) --mode=link $(CC) -version-info $(VERSION) -rpath $(LIBDIR) $(LDFLAGS)
 BUILD_COMMAND_LOCAL     =  $(LIBTOOL) --mode=link $(COMPILE_C) $(INCLUDES)
-BUILD_COMMAND_DYNAMIC   =  $(LIBTOOL) --mode=link $(COMPILE_C) -dynamic $(INCLUDES)
+BUILD_COMMAND_DYNAMIC   =  $(LIBTOOL) --mode=link $(COMPILE_C) -shared $(INCLUDES)
 BUILD_COMMAND_STATIC    =  $(LIBTOOL) --mode=link $(COMPILE_C) -static $(INCLUDES)
 CPPCOMPILE_COMMAND      =  $(LIBTOOL) --mode=compile $(COMPILE_CXX) $(INCLUDES) -c
 CPPLIBRARY_LINK_COMMAND =  $(LIBTOOL) --mode=link $(CXX) -version-info $(VERSION) -rpath $(LIBDIR) $(LDFLAGS)
 CPPBUILD_COMMAND_LOCAL  =  $(LIBTOOL) --mode=link $(COMPILE_CXX) $(INCLUDES)
-CPPBUILD_COMMAND_DYNAMIC=  $(LIBTOOL) --mode=link $(COMPILE_CXX) -dynamic $(INCLUDES)
+CPPBUILD_COMMAND_DYNAMIC=  $(LIBTOOL) --mode=link $(COMPILE_CXX) -shared $(INCLUDES)
 CPPBUILD_COMMAND_STATIC =  $(LIBTOOL) --mode=link $(COMPILE_CXX) -static $(INCLUDES)
 INSTALL_COMMAND         =  $(LIBTOOL) --mode=install cp
 INSTALL_FINISH_COMMAND  =  $(LIBTOOL) --mode=finish
