@@ -1,0 +1,16 @@
+cmake_minimum_required(VERSION 3.22.1)
+project(cqrlib C)
+
+#include_directories(include)
+#set(SOURCES
+#        src/cqrlib.c
+#)
+
+set(SOURCES cqrlib.c)
+
+add_library(${PROJECT_NAME} ${SOURCES})
+
+if (NOT WIN32)
+    target_link_libraries(${PROJECT_NAME} m)
+endif ()
+
